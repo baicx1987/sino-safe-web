@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign,no-extend-native,no-prototype-builtins,prefer-const */
 import moment from 'moment';
 
 export function fixedZero(val) {
@@ -49,6 +50,12 @@ export function getTimeDistance(type) {
   }
 }
 
+/**
+ * 用于遍历具有component的子菜单
+ * @param nodeList
+ * @param parentPath
+ * @returns {Array}
+ */
 export function getPlainNode(nodeList, parentPath = '') {
   const arr = [];
   nodeList.forEach((node) => {
@@ -92,3 +99,61 @@ export function digitUppercase(n) {
 
   return s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');
 }
+
+export function deepCopy(source) {
+  const result = {};
+  for (let key in source) {
+    if (source.hasOwnProperty(key)) {
+      result[key] = typeof source[key] === 'object' ? deepCopy(source[key]) : source[key];
+    }
+  }
+  return result;
+}
+// Array.prototype.clone=function(){ return this.slice(0); }
+export function convertUrl(url, flag) {
+  if (process.env.NODE_ENV === 'production') {
+    if (flag) {
+      return `http:localhost:8000${url}${flag}.jspx`;
+    } else {
+      return `http:localhost:8000${url}.jspx`;
+    }
+  }
+  return url;
+}
+
+Date.prototype.Format = function (fmt) {
+// 对Date的扩展，将 Date 转化为指定格式的String
+// 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+// 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+// 例子：
+// var time1 = new Date().dateFormat("yyyy-MM-dd");
+// var time2 = new Date().dateFormat("yyyy-MM-dd HH:mm:ss");
+  const o = {
+    'M+': this.getMonth() + 1, // 月份
+    'd+': this.getDate(), // 日
+    'h+': this.getHours(), // 小时
+    'm+': this.getMinutes(), // 分
+    's+': this.getSeconds(), // 秒
+    'q+': Math.floor((this.getMonth() + 3) / 3), // 季度
+    S: this.getMilliseconds(), // 毫秒
+  };
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (`${this.getFullYear()}`).substr(4 - RegExp.$1.length));
+  }
+  for (const k in o) {
+    if (new RegExp(`(${k})`).test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : ((`00${o[k]}`).substr((`${o[k]}`).length)));
+    }
+  }
+  return fmt;
+};
+// 检测对象是否为空
+export function objIsEmpty(obj) {
+  for (let name in obj) {
+    if (obj.hasOwnProperty(name)) {
+      return false;
+    }
+  }
+  return true;
+}
+

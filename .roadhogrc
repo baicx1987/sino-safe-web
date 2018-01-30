@@ -20,5 +20,6 @@
   },
   "ignoreMomentLocale": true,
   "theme": "./src/theme.js",
-  "hash": true
+  "hash": true,
+   "publicPath": "./"
 }

@@ -3,10 +3,10 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, Badge, Modal, Divider } from 'antd';
 import moment from 'moment';
-
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ExamTable from '../../components/ExamTable';
 import AddOrUpdateModal from '../../components/AddOrUpdateModal';
-import DetailModal from '../../components/DetailMadal';
+import ViewModal from '../../components/ViewModal';
 import styles from './Common.less';
 import request from '../../utils/request';
 import { convertUrl } from '../../utils/utils';
@@ -16,6 +16,8 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { confirm } = Modal;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+const tableId = 'depId';
+const tableDelete = 'depDeleted';
 
 @connect(state => ({
   examPlan: state.examPlan,
@@ -24,11 +26,9 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 export default class examPlanData extends PureComponent {
   state = {
     addModalVisible: false,
-    detailModalVisible: false,
+    viewModalVisible: false,
     selectedRows: [],
     queryFormValues: {},
-    updateData: {},
-    detailData: {},
     addOrUpdate: '',
     key: '',
   };
@@ -37,12 +37,12 @@ export default class examPlanData extends PureComponent {
     const { dispatch, form } = this.props;
     // 单位下拉菜单数据
     dispatch({
-      type: 'examPlan/unit',
+      type: 'examPlan/unitSelect',
       payload: { suUnitName: '' },
     });
     // 考试名称下拉菜单数据
     dispatch({
-      type: 'examPlan/examName',
+      type: 'examPlan/examNameSelect',
       payload: { deExamName: '' },
     });
     // 查询数据
@@ -70,7 +70,7 @@ export default class examPlanData extends PureComponent {
    */
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    const { searchFormValues } = this.state;
+    const { queryFormValues } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -81,7 +81,7 @@ export default class examPlanData extends PureComponent {
     const params = {
       current: pagination.current,
       pageSize: pagination.pageSize,
-      ...searchFormValues,
+      ...queryFormValues,
       ...filters,
     };
     if (sorter.field) {
@@ -165,30 +165,37 @@ export default class examPlanData extends PureComponent {
     });
   }
   // addModal隐藏显示
-  handleDetailModalVisible = (flag) => {
+  handleViewModalVisible = (flag) => {
     this.setState({
-      detailModalVisible: !!flag,
+      viewModalVisible: !!flag,
     });
   };
   // 列表单项操作
   handleSingleDoneClick = (key, flag) => {
-    let { dispatch, examPlan: { data } } = this.props;
-    let singleData = data.list.filter(item => item.depId === key)[0];
+    const { dispatch } = this.props;
+    const values = {};
+    values[tableId] = key;
     switch (flag) {
       // 详情
-      case 'detail':
+      case 'view':
         this.setState({
-          detailData: singleData,
-          detailModalVisible: true,
+          viewModalVisible: true,
+        });
+        dispatch({
+          type: 'examPlan/view',
+          payload: values,
         });
         break;
       // 修改
       case 'update':
         this.setState({
           addOrUpdate: 'update',
-          updateData: singleData,
           addModalVisible: true,
           key,
+        });
+        dispatch({
+          type: 'examPlan/view',
+          payload: values,
         });
         break;
       // 删除
@@ -209,7 +216,7 @@ export default class examPlanData extends PureComponent {
             };
             dispatch({
               type: 'examPlan/remove',
-              payload: { depId: key },
+              payload: values,
               callback,
             });
           },
@@ -286,16 +293,16 @@ export default class examPlanData extends PureComponent {
   // }
   // 渲染简单查询
   renderSimpleQueryForm() {
-    const { examPlan: { unitData, examNameData } } = this.props;
+    const { examPlan: { unitSelectData, examNameSelectData } } = this.props;
     const unitOptions = [];
     const examNameOptions = [];
-    if (unitData) {
-      unitData.dataMain.list.map(item =>
+    if (unitSelectData) {
+      unitSelectData.dataMain.list.map(item =>
         unitOptions.push(<Option key={item.key} value={item.key}>{item.val}</Option>)
       );
     }
-    if (examNameData) {
-      examNameData.dataMain.list.map(item =>
+    if (examNameSelectData) {
+      examNameSelectData.dataMain.list.map(item =>
         examNameOptions.push(<Option key={item.key} value={item.key}>{item.val}</Option>)
       );
     }
@@ -358,8 +365,9 @@ export default class examPlanData extends PureComponent {
   }
 
   render() {
-    const { examPlan: { loading: examPlanLoading, data, unitData } } = this.props;
-    const { selectedRows, addModalVisible, detailModalVisible, updateData, detailData, addOrUpdate, key } = this.state;
+    const { examPlan: { loading: examPlanLoading, data, unitSelectData, examNameSelectData, viewData } } = this.props;
+    const { selectedRows, addModalVisible, viewModalVisible, addOrUpdate, key } = this.state;
+    console.log(unitSelectData)
     // examPlan的columns
     const depPlanStateMap = ['default', 'processing', 'error'];
     const depPlanState = ['初始', '启用', '停用'];
@@ -422,11 +430,11 @@ export default class examPlanData extends PureComponent {
         title: '操作',
         render: (val, record) => (
           <div>
-            <a onClick={() => this.handleSingleDoneClick(record.depId, 'detail')}>{record.depDeleted ? '' : '详情'}</a>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'view')}>{record[tableDelete] ? '' : '详情'}</a>
             <Divider type="vertical" />
-            <a onClick={() => this.handleSingleDoneClick(record.depId, 'update')}>{record.depDeleted ? '' : '修改'}</a>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'update')}>{record[tableDelete] ? '' : '修改'}</a>
             <Divider type="vertical" />
-            <a onClick={() => this.handleSingleDoneClick(record.depId, 'remove')}>{record.depDeleted ? '' : '删除'}</a>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'remove')}>{record[tableDelete] ? '' : '删除'}</a>
           </div>
         ),
       },
@@ -434,8 +442,9 @@ export default class examPlanData extends PureComponent {
     const addColumns = [
       {
         title: '考试名称',
-        dataIndex: 'depExamName',
+        dataIndex: 'depExamId',
         type: 'select',
+        selectData: examNameSelectData,
         required: true,
       },
       {
@@ -465,8 +474,9 @@ export default class examPlanData extends PureComponent {
       },
       {
         title: '单位名称',
-        dataIndex: 'depUnitName',
-        type: 'input',
+        dataIndex: 'depUnitId',
+        type: 'select',
+        selectData: unitSelectData,
         required: true,
       },
       {
@@ -476,7 +486,7 @@ export default class examPlanData extends PureComponent {
         required: true,
       },
     ];
-    const detailColumns = [
+    const viewColumns = [
       {
         title: '考试名称',
         dataIndex: 'depExamName',
@@ -517,16 +527,20 @@ export default class examPlanData extends PureComponent {
         title: '更新时间',
         dataIndex: 'depGmtModified',
       },
+      {
+        title: '是否删除',
+        dataIndex: 'depDeleted',
+      },
     ];
     const menu = (
       <Menu onClick={this.handleBatchClick} selectedKeys={[]} />
     );
     return (
-      <div>
+      <PageHeaderLayout title="查询表格">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleQueryForm(unitData)}
+              {this.renderSimpleQueryForm()}
             </div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.handleAddClick}>
@@ -559,17 +573,17 @@ export default class examPlanData extends PureComponent {
           addModalVisible={addModalVisible}
           handleSubmitAddForm={this.handleSubmitAddForm}
           handleAddModalVisible={this.handleAddModalVisible}
-          updateData={updateData}
+          viewData={viewData}
           addOrUpdate={addOrUpdate}
           key={key}
         />
-        <DetailModal
-          detailColumns={detailColumns}
-          detailData={detailData}
-          detailModalVisible={detailModalVisible}
-          handleDetailModalVisible={this.handleDetailModalVisible}
+        <ViewModal
+          viewColumns={viewColumns}
+          viewData={viewData}
+          viewModalVisible={viewModalVisible}
+          handleViewModalVisible={this.handleViewModalVisible}
         />
-      </div>
+      </PageHeaderLayout>
     );
   }
 }

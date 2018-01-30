@@ -5,7 +5,7 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, Badg
 import moment from 'moment';
 import ExamTable from '../../components/ExamTable';
 import AddOrUpdateModal from '../../components/AddOrUpdateModal';
-import DetailModal from '../../components/DetailMadal';
+import ViewModal from '../../components/ViewModal';
 import styles from './Common.less';
 import request from '../../utils/request';
 import { convertUrl } from '../../utils/utils';
@@ -15,6 +15,8 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { confirm } = Modal;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+const tableId = 'deId';
+const tableDelete = 'deDeleted';
 
 @connect(state => ({
   exam: state.exam,
@@ -23,21 +25,20 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 export default class ExamData extends PureComponent {
   state = {
     addModalVisible: false,
-    detailModalVisible: false,
+    viewModalVisible: false,
     selectedRows: [],
     queryFormValues: {},
-    updateData: {},
-    detailData: {},
     addOrUpdate: '',
     key: '',
   };
 
   componentDidMount() {
     const { dispatch, form } = this.props;
-    // dispatch({
-    //   type: 'exam/unit',
-    //   payload: { suUnitName: '' },
-    // });
+    // 单位下拉数据
+    dispatch({
+      type: 'exam/unitSelect',
+      payload: { suUnitName: '' },
+    });
     // 查询数据
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -63,7 +64,7 @@ export default class ExamData extends PureComponent {
    */
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    const { searchFormValues } = this.state;
+    const { queryFormValues } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -74,7 +75,7 @@ export default class ExamData extends PureComponent {
     const params = {
       current: pagination.current,
       pageSize: pagination.pageSize,
-      ...searchFormValues,
+      ...queryFormValues,
       ...filters,
     };
     if (sorter.field) {
@@ -158,30 +159,37 @@ export default class ExamData extends PureComponent {
     });
   }
   // addModal隐藏显示
-  handleDetailModalVisible = (flag) => {
+  handleViewModalVisible = (flag) => {
     this.setState({
-      detailModalVisible: !!flag,
+      viewModalVisible: !!flag,
     });
   };
   // 列表单项操作
   handleSingleDoneClick = (key, flag) => {
-    let { dispatch, exam: { data } } = this.props;
-    let singleData = data.list.filter(item => item.deId === key)[0];
+    const { dispatch } = this.props;
+    const values = {};
+    values[tableId] = key;
     switch (flag) {
       // 详情
-      case 'detail':
+      case 'view':
         this.setState({
-          detailData: singleData,
-          detailModalVisible: true,
+          viewModalVisible: true,
+        });
+        dispatch({
+          type: 'exam/view',
+          payload: values,
         });
         break;
       // 修改
       case 'update':
         this.setState({
           addOrUpdate: 'update',
-          updateData: singleData,
           addModalVisible: true,
           key,
+        });
+        dispatch({
+          type: 'exam/view',
+          payload: values,
         });
         break;
       // 删除
@@ -202,7 +210,7 @@ export default class ExamData extends PureComponent {
             };
             dispatch({
               type: 'exam/remove',
-              payload: { deId: key },
+              payload: values,
               callback,
             });
           },
@@ -255,32 +263,31 @@ export default class ExamData extends PureComponent {
           callback,
         });
       } else if (addOrUpdate === 'update') {
+        values[tableId] = key;
         dispatch({
           type: 'exam/update',
           payload: {
             ...values,
-            deId: key,
           },
           callback,
         });
       }
     });
   }
-  // select
-  handleSelectChange = (value) => {
-    const { dispatch } = this.props;
-    console.log(111);
-    dispatch({
-      type: 'exam/unit',
-      payload: { suUnitName: value },
-    });
-  }
+  // // select
+  // handleSelectChange = (value) => {
+  //   const { dispatch } = this.props;
+  //   dispatch({
+  //     type: 'exam/unit',
+  //     payload: { suUnitName: value },
+  //   });
+  // }
   // 渲染简单查询
   renderSimpleQueryForm() {
-    const { exam: { unitData } } = this.props;
+    const { exam: { unitSelectData } } = this.props;
     const unitOptions = [];
-    if (unitData) {
-      unitData.dataMain.list.map(item =>
+    if (unitSelectData) {
+      unitSelectData.dataMain.list.map(item =>
         unitOptions.push(<Option key={item.key} value={item.key}>{item.val}</Option>)
       );
     }
@@ -302,7 +309,7 @@ export default class ExamData extends PureComponent {
                 <Select
                   showSearch
                   style={{ width: '100%' }}
-                  placeholder="Select"
+                  placeholder="请选择"
                   optionFilterProp="children"
                   // onChange={handleChange}
                   // onFocus={handleFocus}
@@ -310,9 +317,7 @@ export default class ExamData extends PureComponent {
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                   onChange={this.handleSelectChange}
                 >
-                  <Option value="jack">Jack</Option>
-                  <Option value="lucy">Lucy</Option>
-                  <Option value="tom">Tom</Option>
+                  {unitOptions}
                 </Select>
               )}
             </FormItem>
@@ -340,8 +345,8 @@ export default class ExamData extends PureComponent {
   }
 
   render() {
-    const { exam: { loading: examLoading, data, unitData } } = this.props;
-    const { selectedRows, addModalVisible, detailModalVisible, updateData, detailData, addOrUpdate, key } = this.state;
+    const { exam: { loading: examLoading, data, unitSelectData, viewData } } = this.props;
+    const { selectedRows, addModalVisible, viewModalVisible, addOrUpdate, key } = this.state;
     // exam的columns
     const statusMap = ['success', 'error'];
     const status = ['活动的', '已删除'];
@@ -378,11 +383,11 @@ export default class ExamData extends PureComponent {
         title: '操作',
         render: (val, record) => (
           <div>
-            <a onClick={() => this.handleSingleDoneClick(record.deId, 'detail')}>{record.deDeleted ? '' : '详情'}</a>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'view')}>{record[tableDelete] ? '' : '详情'}</a>
             <Divider type="vertical" />
-            <a onClick={() => this.handleSingleDoneClick(record.deId, 'update')}>{record.deDeleted ? '' : '修改'}</a>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'update')}>{record[tableDelete] ? '' : '修改'}</a>
             <Divider type="vertical" />
-            <a onClick={() => this.handleSingleDoneClick(record.deId, 'remove')}>{record.deDeleted ? '' : '删除'}</a>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'remove')}>{record[tableDelete] ? '' : '删除'}</a>
           </div>
         ),
       },
@@ -397,8 +402,9 @@ export default class ExamData extends PureComponent {
       },
       {
         title: '单位名称',
-        dataIndex: 'deUnitName',
-        type: 'input',
+        dataIndex: 'deUnitId',
+        type: 'select',
+        selectData: unitSelectData,
         required: true,
       },
       {
@@ -408,7 +414,7 @@ export default class ExamData extends PureComponent {
         required: true,
       },
     ];
-    const detailColumns = [
+    const viewColumns = [
       {
         title: '考试名称',
         dataIndex: 'deExamName',
@@ -434,7 +440,7 @@ export default class ExamData extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleQueryForm(unitData)}
+              {this.renderSimpleQueryForm()}
             </div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.handleAddClick}>
@@ -467,15 +473,15 @@ export default class ExamData extends PureComponent {
           addModalVisible={addModalVisible}
           handleSubmitAddForm={this.handleSubmitAddForm}
           handleAddModalVisible={this.handleAddModalVisible}
-          updateData={updateData}
+          viewData={viewData}
           addOrUpdate={addOrUpdate}
           key={key}
         />
-        <DetailModal
-          detailColumns={detailColumns}
-          detailData={detailData}
-          detailModalVisible={detailModalVisible}
-          handleDetailModalVisible={this.handleDetailModalVisible}
+        <ViewModal
+          viewColumns={viewColumns}
+          viewData={viewData}
+          viewModalVisible={viewModalVisible}
+          handleViewModalVisible={this.handleViewModalVisible}
         />
       </div>
     );

@@ -11,10 +11,21 @@ export default class SiderMenu extends PureComponent {
   constructor(props) {
     super(props);
     // 把一级 Layout 的 children 作为菜单项
-    this.menus = props.navData.reduce((arr, current) => arr.concat(current.children), []);
-    this.state = {
-      openKeys: this.getDefaultCollapsedSubMenus(props),
-    };
+    if (props.navData) {
+      this.menus = props.navData.reduce((arr, current) => arr.concat(current.children), []);
+      this.state = {
+        openKeys: this.getDefaultCollapsedSubMenus(props),
+      };
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    // 把一级 Layout 的 children 作为菜单项
+    if (nextProps.navData) {
+      this.menus = nextProps.navData.reduce((arr, current) => arr.concat(current.children), []);
+      this.setState({
+        openKeys: this.getDefaultCollapsedSubMenus(nextProps),
+      });
+    }
   }
   onCollapse = (collapsed) => {
     this.props.dispatch({
@@ -26,7 +37,7 @@ export default class SiderMenu extends PureComponent {
     const currentMenuSelectedKeys = [...this.getCurrentMenuSelectedKeys(props)];
     currentMenuSelectedKeys.splice(-1, 1);
     if (currentMenuSelectedKeys.length === 0) {
-      return ['dashboard'];
+      return ['baseData'];
     }
     return currentMenuSelectedKeys;
   }

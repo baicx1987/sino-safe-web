@@ -1,4 +1,5 @@
-import { queryNotices } from '../services/api';
+import { message } from 'antd/lib/index';
+import { queryMenu, queryNotices } from '../services/api';
 
 export default {
   namespace: 'global',
@@ -10,6 +11,18 @@ export default {
   },
 
   effects: {
+    *fetchMenu(_, { call, put }) {
+      const response = yield call(queryMenu);
+      if (response.status === '1') {
+        yield put({
+          type: 'saveMenu',
+          payload: response.dataMain.list,
+        });
+        console.log('菜单数据后端响应：', response);
+      } else {
+        message.error(response.msg);
+      }
+    },
     *fetchNotices(_, { call, put }) {
       yield put({
         type: 'changeNoticeLoading',
@@ -18,11 +31,11 @@ export default {
       const data = yield call(queryNotices);
       yield put({
         type: 'saveNotices',
-        payload: data,
+        payload: data.dataMain,
       });
       yield put({
         type: 'user/changeNotifyCount',
-        payload: data.length,
+        payload: data.dataMain.length,
       });
     },
     *clearNotices({ payload }, { put, select }) {
@@ -39,6 +52,12 @@ export default {
   },
 
   reducers: {
+    saveMenu(state, { payload }) {
+      return {
+        ...state,
+        menuData: payload,
+      };
+    },
     changeLayoutCollapsed(state, { payload }) {
       return {
         ...state,
