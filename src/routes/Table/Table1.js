@@ -10,7 +10,7 @@ import styles from './TableList.less';
 import { request } from '../../utils/request';
 
 const FormItem = Form.Item;
-// es6对象的解构赋值
+// es6对象的的解构赋值
 const { Option } = Select;
 const { confirm } = Modal;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
