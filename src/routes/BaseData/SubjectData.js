@@ -4,11 +4,10 @@ import { connect } from 'dva';
 import { Row, Col, Card, Form, Select, Icon, Button, Dropdown, Menu, Badge, Modal, Divider, message } from 'antd';
 import moment from 'moment';
 
-import SinoTableForm from '../../components/SinoTableForm';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ExamTable from '../../components/ExamTable';
 import AddOrUpdateModal from '../../components/AddOrUpdateModal';
 import SinoAddMoreModal from '../../components/SinoAddMoreModal';
-import { objIsEmpty } from '../../utils/utils';
 import styles from './Common.less';
 
 // 表主键
@@ -330,6 +329,30 @@ export default class SubjectData extends PureComponent {
         dataIndex: 'dsOrder',
       },
       {
+        title: '是否删除',
+        dataIndex: 'dpIsDeleted',
+        render(val) {
+          return (<Badge
+            status={
+              val ? statusMap[1] : statusMap[0]}
+            text={val ? status[1] : status[0]
+            }
+          />);
+        },
+      },
+      {
+        title: '操作',
+        render: (val, record) => (
+          <div>
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'update')}>{record[tableDelete] ? '' : '修改'}</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'remove')}>{record[tableDelete] ? '' : '删除'}</a>
+          </div>
+        ),
+      },
+    ];
+    const detailColumns = [
+      {
         title: '科目开始时间',
         dataIndex: 'dsGmtStart',
         sorter: true,
@@ -353,29 +376,7 @@ export default class SubjectData extends PureComponent {
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
       },
-      {
-        title: '是否删除',
-        dataIndex: 'dpIsDeleted',
-        render(val) {
-          return (<Badge
-            status={
-              val ? statusMap[1] : statusMap[0]}
-            text={val ? status[1] : status[0]
-            }
-          />);
-        },
-      },
-      {
-        title: '操作',
-        render: (val, record) => (
-          <div>
-            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'update')}>{record[tableDelete] ? '' : '修改'}</a>
-            <Divider type="vertical" />
-            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'remove')}>{record[tableDelete] ? '' : '删除'}</a>
-          </div>
-        ),
-      },
-    ];
+    ]
     const addColumns = [
       {
         title: '考试计划名称',
@@ -457,7 +458,7 @@ export default class SubjectData extends PureComponent {
       <Menu onClick={this.handleBatchClick} selectedKeys={[]} />
     );
     return (
-      <div>
+      <PageHeaderLayout>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
@@ -480,6 +481,7 @@ export default class SubjectData extends PureComponent {
               }
             </div>
             <ExamTable
+              detailColumns={detailColumns}
               selectedRows={selectedRows}
               loading={subjectLoading}
               data={data}
@@ -507,7 +509,7 @@ export default class SubjectData extends PureComponent {
           viewData={viewData}
           addOrUpdate={addOrUpdate}
         />
-      </div>
+      </PageHeaderLayout>
     );
   }
 }

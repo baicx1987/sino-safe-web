@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, Badge, Modal, Divider } from 'antd';
 import moment from 'moment';
-
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import ExamTable from '../../components/ExamTable';
 import AddOrUpdateModal from '../../components/AddOrUpdateModal';
 import ViewMoreModal from '../../components/ViewMoreModal';
@@ -307,17 +307,47 @@ export default class LicensesData extends PureComponent {
       this.handleAddModalVisible(false);
     });
   }
-  // select
-  // handleSelectChange = (value) => {
-  //   const { dispatch } = this.props;
-  //   console.log(111);
-  //   dispatch({
-  //     type: 'license/unit',
-  //     payload: { suUnitName: value },
-  //   });
-  // }
-  // 渲染简单查询
+  // 切换查询面板收放
+  toggleForm = () => {
+    this.setState({
+      expandForm: !this.state.expandForm,
+    });
+  }
+  // 渲染复杂查询
   renderSimpleQueryForm() {
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="考生名字">
+              {getFieldDecorator('dlExamineeName')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="身份证号">
+              {getFieldDecorator('dlIdentity')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24} style={{ float: 'right', marginBottom: 24, marginRight: -84 }}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">查询</Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              展开 <Icon type="down" />
+              </a>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+  // 渲染简单查询
+  renderAdvancedQueryForm() {
     const { license: { subjectSelectData, areaSelectData, examPlanNameSelectData } } = this.props;
     const subjectOptions = [];
     const areaOptions = [];
@@ -342,6 +372,27 @@ export default class LicensesData extends PureComponent {
     return (
       <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="考生名字">
+              {getFieldDecorator('dlExamineeName')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="身份证号">
+              {getFieldDecorator('dlIdentity')(
+                <Input placeholder="请输入" />
+                )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="准考证号">
+              {getFieldDecorator('dlLicense')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <FormItem label="考试计划名称">
               {getFieldDecorator('dlPlanId')(
@@ -378,28 +429,6 @@ export default class LicensesData extends PureComponent {
               )}
             </FormItem>
           </Col>
-
-          <Col md={8} sm={24}>
-            <FormItem label="考生名字">
-              {getFieldDecorator('dlExamineeName')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="身份证号">
-              {getFieldDecorator('dlIdentity')(
-                <Input placeholder="请输入" />
-                )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="准考证号">
-              {getFieldDecorator('dlLicense')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
           <Col md={8} sm={24}>
             <FormItem label="是否删除">
               {getFieldDecorator('dlDeleted', { initialValue: 'false' })(
@@ -414,13 +443,19 @@ export default class LicensesData extends PureComponent {
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">查询</Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              收起 <Icon type="up" />
+              </a>
             </span>
           </Col>
         </Row>
       </Form>
     );
   }
-
+  // 渲染查询面板
+  renderQueryForm() {
+    return this.state.expandForm ? this.renderAdvancedQueryForm() : this.renderSimpleQueryForm();
+  }
   render() {
     const { license: { loading: licenseLoading, data, subjectSelectData, areaSelectData,
       examPlanNameSelectData, viewData, examineeViewData, photoViewData } } = this.props;
@@ -447,24 +482,8 @@ export default class LicensesData extends PureComponent {
         dataIndex: 'dlAreaName',
       },
       {
-        title: '考试计划名称',
-        dataIndex: 'dlPlanName',
-      },
-      {
         title: '科目名称',
         dataIndex: 'dlSubjectName',
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'dlGmtCreate',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
-      },
-      {
-        title: '修改时间',
-        dataIndex: 'dlGmtModified',
-        sorter: true,
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
       },
       {
         title: '是否删除',
@@ -489,6 +508,24 @@ export default class LicensesData extends PureComponent {
             <a onClick={() => this.handleSingleDoneClick(record[tableId], 'remove')}>{record[tableDelete] ? '' : '删除'}</a>
           </div>
         ),
+      },
+    ];
+    const detailColumns = [
+      {
+        title: '考试计划名称',
+        dataIndex: 'dlPlanName',
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'dlGmtCreate',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
+      },
+      {
+        title: '修改时间',
+        dataIndex: 'dlGmtModified',
+        sorter: true,
+        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
       },
     ];
     const addColumns = [
@@ -571,10 +608,6 @@ export default class LicensesData extends PureComponent {
         dataIndex: 'dlSubjectName',
       },
       {
-        title: '照片路径',
-        dataIndex: 'dlPhotoPath',
-      },
-      {
         title: '创建时间',
         dataIndex: 'dlGmtCreate',
       },
@@ -591,10 +624,6 @@ export default class LicensesData extends PureComponent {
       {
         title: '性别',
         dataIndex: 'dexSex',
-      },
-      {
-        title: '准考证号',
-        dataIndex: 'dlLicense',
       },
       {
         title: '学历',
@@ -615,14 +644,6 @@ export default class LicensesData extends PureComponent {
       {
         title: '单位',
         dataIndex: 'dexUnit',
-      },
-      {
-        title: '姓名',
-        dataIndex: 'dexExamineeName',
-      },
-      {
-        title: '身份证号',
-        dataIndex: 'dexIdentity',
       },
     ];
     const viewPhotoColumns = [
@@ -647,10 +668,6 @@ export default class LicensesData extends PureComponent {
         dataIndex: 'dpFormat',
       },
       {
-        title: '照片特征码文件路径',
-        dataIndex: 'dpFeaturePath',
-      },
-      {
         title: '照片质量',
         dataIndex: 'dpQuality1',
       },
@@ -667,11 +684,11 @@ export default class LicensesData extends PureComponent {
       <Menu onClick={this.handleBatchClick} selectedKeys={[]} />
     );
     return (
-      <div>
+      <PageHeaderLayout>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleQueryForm()}
+              {this.renderQueryForm()}
             </div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.handleAddClick}>
@@ -693,6 +710,7 @@ export default class LicensesData extends PureComponent {
               selectedRows={selectedRows}
               loading={licenseLoading}
               data={data}
+              detailColumns={detailColumns}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
@@ -718,7 +736,7 @@ export default class LicensesData extends PureComponent {
           viewLowColumns={viewLowColumns}
           viewPhotoColumns={viewPhotoColumns}
         />
-      </div>
+      </PageHeaderLayout>
     );
   }
 }

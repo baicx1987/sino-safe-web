@@ -5,7 +5,7 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, Badg
 import moment from 'moment';
 import ExamTable from '../../components/ExamTable';
 import AddOrUpdateModal from '../../components/AddOrUpdateModal';
-import ViewModal from '../../components/ViewModal';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './Common.less';
 import request from '../../utils/request';
 import { convertUrl } from '../../utils/utils';
@@ -25,8 +25,8 @@ const tableDelete = 'deDeleted';
 export default class ExamData extends PureComponent {
   state = {
     addModalVisible: false,
-    viewModalVisible: false,
     selectedRows: [],
+    expandForm: false,
     queryFormValues: {},
     addOrUpdate: '',
     key: '',
@@ -91,6 +91,12 @@ export default class ExamData extends PureComponent {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  }
+  // 切换查询面板收放
+  toggleForm = () => {
+    this.setState({
+      expandForm: !this.state.expandForm,
+    });
   }
   // 列表批量操作
   handleBatchClick = (e) => {
@@ -274,16 +280,54 @@ export default class ExamData extends PureComponent {
       }
     });
   }
-  // // select
-  // handleSelectChange = (value) => {
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: 'exam/unit',
-  //     payload: { suUnitName: value },
-  //   });
-  // }
   // 渲染简单查询
   renderSimpleQueryForm() {
+    const { exam: { unitSelectData } } = this.props;
+    const unitOptions = [];
+    if (unitSelectData) {
+      unitSelectData.dataMain.list.map(item =>
+        unitOptions.push(<Option key={item.key} value={item.key}>{item.val}</Option>)
+      );
+    }
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="考试名称">
+              {getFieldDecorator('deExamName')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="单位名称">
+              {getFieldDecorator('deUnitId')(
+                <Select
+                  showSearch
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                >
+                  {unitOptions}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col style={{ overflow: 'hidden' }}>
+            <span style={{ float: 'right', marginBottom: 24 }}>
+              <Button type="primary" htmlType="submit">查询</Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              展开 <Icon type="down" />
+              </a>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+  // 渲染复杂查询
+  renderAdvancedQueryForm() {
     const { exam: { unitSelectData } } = this.props;
     const unitOptions = [];
     if (unitSelectData) {
@@ -294,7 +338,7 @@ export default class ExamData extends PureComponent {
 
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
+      <Form onSubmit={this.renderAdvancedQueryForm} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="考试名称">
@@ -310,12 +354,6 @@ export default class ExamData extends PureComponent {
                   showSearch
                   style={{ width: '100%' }}
                   placeholder="请选择"
-                  optionFilterProp="children"
-                  // onChange={handleChange}
-                  // onFocus={handleFocus}
-                  // onBlur={handleBlur}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                  onChange={this.handleSelectChange}
                 >
                   {unitOptions}
                 </Select>
@@ -337,16 +375,23 @@ export default class ExamData extends PureComponent {
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">查询</Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              收起 <Icon type="up" />
+              </a>
             </span>
           </Col>
         </Row>
       </Form>
     );
   }
+  // 渲染查询面板
+  renderQueryForm() {
+    return this.state.expandForm ? this.renderAdvancedQueryForm() : this.renderSimpleQueryForm();
+  }
 
   render() {
     const { exam: { loading: examLoading, data, unitSelectData, viewData } } = this.props;
-    const { selectedRows, addModalVisible, viewModalVisible, addOrUpdate, key } = this.state;
+    const { selectedRows, addModalVisible, addOrUpdate, key } = this.state;
     // exam的columns
     const statusMap = ['success', 'error'];
     const status = ['活动的', '已删除'];
@@ -383,8 +428,6 @@ export default class ExamData extends PureComponent {
         title: '操作',
         render: (val, record) => (
           <div>
-            <a onClick={() => this.handleSingleDoneClick(record[tableId], 'view')}>{record[tableDelete] ? '' : '详情'}</a>
-            <Divider type="vertical" />
             <a onClick={() => this.handleSingleDoneClick(record[tableId], 'update')}>{record[tableDelete] ? '' : '修改'}</a>
             <Divider type="vertical" />
             <a onClick={() => this.handleSingleDoneClick(record[tableId], 'remove')}>{record[tableDelete] ? '' : '删除'}</a>
@@ -414,15 +457,7 @@ export default class ExamData extends PureComponent {
         required: true,
       },
     ];
-    const viewColumns = [
-      {
-        title: '考试名称',
-        dataIndex: 'deExamName',
-      },
-      {
-        title: '主办单位名称',
-        dataIndex: 'deUnitName',
-      },
+    const detailColumns = [
       {
         title: '详情',
         dataIndex: 'deExamRemark',
@@ -436,11 +471,11 @@ export default class ExamData extends PureComponent {
       <Menu onClick={this.handleBatchClick} selectedKeys={[]} />
     );
     return (
-      <div>
+      <PageHeaderLayout>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleQueryForm()}
+              {this.renderQueryForm()}
             </div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.handleAddClick}>
@@ -462,6 +497,7 @@ export default class ExamData extends PureComponent {
               selectedRows={selectedRows}
               loading={examLoading}
               data={data}
+              detailColumns={detailColumns}
               columns={columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
@@ -477,13 +513,7 @@ export default class ExamData extends PureComponent {
           addOrUpdate={addOrUpdate}
           key={key}
         />
-        <ViewModal
-          viewColumns={viewColumns}
-          viewData={viewData}
-          viewModalVisible={viewModalVisible}
-          handleViewModalVisible={this.handleViewModalVisible}
-        />
-      </div>
+      </PageHeaderLayout>
     );
   }
 }
