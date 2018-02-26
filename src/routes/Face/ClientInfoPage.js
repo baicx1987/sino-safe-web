@@ -257,16 +257,30 @@ export default class ClientInfoPage extends PureComponent {
       <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="考试计划外键">
-              {getFieldDecorator('fciPlanId')(
+            <FormItem label="设备编号">
+              {getFieldDecorator('fciUkeyNumber')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="行政区外键">
-              {getFieldDecorator('fciAreaId')(
-                <Input placeholder="请输入" />
+          <Col md={5} sm={24}>
+            <FormItem label="比对方式">
+              {getFieldDecorator('fciFaceType', { initialValue: '1' })(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="1">报名照片</Option>
+                  <Option value="2">身份证照片</Option>
+                  <Option value="3">身份证或报名照</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem label="设备状态">
+              {getFieldDecorator('fciState', { initialValue: '1' })(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="1">正常</Option>
+                  <Option value="2">异常</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
@@ -297,41 +311,12 @@ export default class ClientInfoPage extends PureComponent {
       <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="考试计划外键">
-              {getFieldDecorator('fciPlanId')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="行政区外键">
-              {getFieldDecorator('fciAreaId')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={5} sm={24}>
-            <FormItem label="考点外键">
-              {getFieldDecorator('fciPlaceId')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={5} sm={24}>
             <FormItem label="设备编号">
               {getFieldDecorator('fciUkeyNumber')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
-            <FormItem label="科目外键">
-              {getFieldDecorator('fciSubjectId')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-
           <Col md={5} sm={24}>
             <FormItem label="比对方式">
               {getFieldDecorator('fciFaceType', { initialValue: '1' })(
@@ -343,7 +328,16 @@ export default class ClientInfoPage extends PureComponent {
               )}
             </FormItem>
           </Col>
-
+          <Col md={5} sm={24}>
+            <FormItem label="设备状态">
+              {getFieldDecorator('fciState', { initialValue: '1' })(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="1">正常</Option>
+                  <Option value="2">异常</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
           <Col md={3} sm={24}>
             <FormItem label="状态">
               {getFieldDecorator('fciIsDeleted', { initialValue: 'false' })(
@@ -376,7 +370,7 @@ export default class ClientInfoPage extends PureComponent {
     const { selectedRows, addModalVisible, addOrUpdate, key } = this.state;
     // clientInfoPage的columns
     const statusMap = ['success', 'error'];
-    const status = ['正常', '异常'];
+    const status = ['活动的', '已删除'];
 
     const fciFaceTypeMap = ['success', 'processing', 'default'];
     const fciFaceType = ['报名照片','身份证照片','身份证或报名照'];
@@ -386,7 +380,7 @@ export default class ClientInfoPage extends PureComponent {
         dataIndex: 'fciUkeyNumber',
       },
       {
-        title: '电脑信息',
+        title: '设备信息',
         dataIndex: 'fciPcInfo',
       },
       {
@@ -433,7 +427,7 @@ export default class ClientInfoPage extends PureComponent {
         title: '皮肤名称',
         dataIndex: 'ssName',
         type: 'input',
-        validator: this.handleClientInfoPageNameChange,
+        validator: this.handleclientInfoPageNameChange,
         required: true,
       },
       {
@@ -463,8 +457,8 @@ export default class ClientInfoPage extends PureComponent {
     ];*/
     const detailColumns = [
       {
-        title: '创建时间',
-        dataIndex: 'fciGmtCreate',
+        title: '现场查询时间',
+        dataIndex: 'fciGmtSelect',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
@@ -510,7 +504,7 @@ export default class ClientInfoPage extends PureComponent {
           </div>
         </Card>
         <AddOrUpdateModal
-         /* addColumns={addColumns}*/
+          /*addColumns={addColumns}*/
           addModalVisible={addModalVisible}
           handleSubmitAddForm={this.handleSubmitAddForm}
           handleAddModalVisible={this.handleAddModalVisible}

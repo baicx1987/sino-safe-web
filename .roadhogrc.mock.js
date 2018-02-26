@@ -365,7 +365,83 @@ const proxy = {
     res.send({ status: 'ok' });
   },
   'POST /api/notices': getNotices,
+
+  // TemplatePage 增删改查
+  'POST /msg/templateView': getTemplatePageViewData,
+  'POST /msg/templatePage': getTemplatePageMockData,
+  'POST /msg/template': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postTemplatePageMockData,
+  },
+  // Task 增删改查
+  'POST /msg/taskView': getTaskPageViewData,
+  'POST /msg/taskPage': getTaskPageMockData,
+  'POST /msg/task': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postTaskPageMockData,
+  },
 };
+
+// dataPage 增删改查
+  'POST /face/dataView': getDataPageViewData,
+  'POST /face/dataPage': getDataPageMockData,
+  'POST /face/dataPage': {
+  $params: {
+    pageSize: {
+      desc: '分页',
+        exp: 2,
+    },
+  },
+  $body: postDataPageMockData,
+
+    // dataPage 增删改查
+    'POST /face/dataView': getDataPageViewData,
+    'POST /face/dataPage': getDataPageMockData,
+    'POST /face/dataPage': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+          exp: 2,
+      },
+    },
+    $body: postDataPageMockData,
+  },
+
+  // clientInfoPage 增删改查
+  'POST /face/clientInfoView': getClientInfoPageViewData,
+    'POST /face/clientInfoPage': getClientInfoPageMockData,
+    'POST /face/clientInfoPage': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+          exp: 2,
+      },
+    },
+    $body: postClientInfoPageMockData,
+  },
+  // SendRecordPage 增删改查
+  'POST /msg/sendRecordView': getSendRecordPageViewData,
+    'POST /msg/sendRecordPage': getSendRecordPageMockData,
+    'POST /msg/sendRecord': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+          exp: 2,
+      },
+    },
+    $body: postSendRecordPageMockData,
+  },
+},
 // 如果开发环境，delay函数模拟延迟，如果是生产环境，则不启服务
 export default noProxy ? {} : delay(proxy, 1000);
 // export default {

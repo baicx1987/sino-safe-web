@@ -5,11 +5,17 @@ import { convertUrl } from '../utils/utils';
 // TemplatePage 增删改查
 export async function viewTemplatePage(params) {
   const url = convertUrl('/msg/templateView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryTemplatePage(params) {
   const url = convertUrl('/msg/templatePage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeTemplatePage(params) {
   const url = convertUrl('/msg/template', 'Remove');
@@ -45,11 +51,17 @@ export async function updateTemplatePage(params) {
 // TaskPage 增删改查
 export async function viewTaskPage(params) {
   const url = convertUrl('/msg/taskView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryTaskPage(params) {
   const url = convertUrl('/msg/taskPage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeTaskPage(params) {
   const url = convertUrl('/msg/task', 'Remove');
@@ -85,11 +97,17 @@ export async function updateTaskPage(params) {
 // sendRecordPage 增删改查
 export async function viewSendRecordPage(params) {
   const url = convertUrl('/msg/sendRecordView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function querySendRecordPage(params) {
   const url = convertUrl('/msg/sendRecordPage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeSendRecordPage(params) {
   const url = convertUrl('/msg/sendRecord', 'Remove');
