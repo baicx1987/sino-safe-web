@@ -81,3 +81,43 @@ export async function updateSkinUse(params) {
     },
   });
 }
+
+// SkinPage 增删改查
+export async function viewSkinPage(params) {
+  const url = convertUrl('/skin/skinView');
+  return request(`${url}?${stringify(params)}`);
+}
+export async function querySkinPage(params) {
+  const url = convertUrl('/skin/skinPage');
+  return request(`${url}?${stringify(params)}`);
+}
+export async function removeSkinPage(params) {
+  const url = convertUrl('/skin/skinPage', 'Remove');
+  return request(url, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'remove',
+    },
+  });
+}
+export async function addSkinPage(params) {
+  const url = convertUrl('/skin/skinPage', 'Save');
+  return request(url, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'add',
+    },
+  });
+}
+export async function updateSkinPage(params) {
+  const url = convertUrl('/skin/skinPage', 'Update');
+  return request(url, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'update',
+    },
+  });
+}
