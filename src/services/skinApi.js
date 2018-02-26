@@ -1,16 +1,21 @@
 /* eslint-disable linebreak-style */
-import { stringify } from 'qs';
 import request from '../utils/request';
 import { convertUrl } from '../utils/utils';
 
 // Template 增删改查
 export async function viewTemplate(params) {
   const url = convertUrl('/skin/templateView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryTemplate(params) {
   const url = convertUrl('/skin/templatePage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeTemplate(params) {
   const url = convertUrl('/skin/template', 'Remove');
@@ -45,11 +50,17 @@ export async function updateTemplate(params) {
 // SkinUse 增删改查
 export async function viewSkinUse(params) {
   const url = convertUrl('/skin/skinUseView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function querySkinUse(params) {
   const url = convertUrl('/skin/skinUsePage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeSkinUse(params) {
   const url = convertUrl('/skin/skinUse', 'Remove');
@@ -81,18 +92,68 @@ export async function updateSkinUse(params) {
     },
   });
 }
-
+// Skin 增删改查
+export async function viewSkin(params) {
+  const url = convertUrl('/skin/skinView');
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function querySkin(params) {
+  const url = convertUrl('/skin/skinPage');
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
+}
+export async function removeSkin(params) {
+  const url = convertUrl('skin/skin', 'Remove');
+  return request(url, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'remove',
+    },
+  });
+}
+export async function addSkin(params) {
+  const url = convertUrl('skin/skin', 'Save');
+  return request(url, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'add',
+    },
+  });
+}
+export async function updateSkin(params) {
+  const url = convertUrl('skin/skin', 'Update');
+  return request(url, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'update',
+    },
+  });
+}
 // SkinPage 增删改查
 export async function viewSkinPage(params) {
-  const url = convertUrl('/skin/skinView');
-  return request(`${url}?${stringify(params)}`);
+  const url = convertUrl('/skin/pageView');
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function querySkinPage(params) {
-  const url = convertUrl('/skin/skinPage');
-  return request(`${url}?${stringify(params)}`);
+  const url = convertUrl('skin/pagePage');
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeSkinPage(params) {
-  const url = convertUrl('/skin/skinPage', 'Remove');
+  const url = convertUrl('skin/page', 'Remove');
   return request(url, {
     method: 'POST',
     body: {
@@ -102,7 +163,7 @@ export async function removeSkinPage(params) {
   });
 }
 export async function addSkinPage(params) {
-  const url = convertUrl('/skin/skinPage', 'Save');
+  const url = convertUrl('skin/page', 'Save');
   return request(url, {
     method: 'POST',
     body: {
@@ -112,7 +173,7 @@ export async function addSkinPage(params) {
   });
 }
 export async function updateSkinPage(params) {
-  const url = convertUrl('/skin/skinPage', 'Update');
+  const url = convertUrl('skin/page', 'Update');
   return request(url, {
     method: 'POST',
     body: {
