@@ -15,15 +15,13 @@ import { getUkeyViewData, getUkeyMockData, postUkeyMockData, postUkeyIdVerif } f
 import { getMachineViewData, getMachineMockData, postMachineMockData } from './mock/machine';
 import { getTemplateViewData, getTemplateMockData, postTemplateMockData, postTemplateVerif } from './mock/template';
 import { getSkinUseViewData, getSkinUseMockData, postSkinUseMockData } from './mock/skinUse';
+import { getSkinViewData, getSkinMockData, postSkinMockData } from './mock/skin';
 import { getSkinPageViewData, getSkinPageMockData, postSkinPageMockData } from './mock/skinPage';
-import { getTemplatePageViewData, getTemplatePageMockData, postTemplatePageMockData } from './mock/templatePage';
-import { getTaskPageViewData, getTaskPageMockData, postTaskPageMockData } from './mock/taskPage';
-import { getSendRecordPageViewData, getSendRecordPageMockData, postSendRecordPageMockData } from './mock/sendRecordPage';
 import { getUkeyProgramViewData, getUkeyProgramMockData, postUkeyProgramMockData } from './mock/ukeyProgram';
 import { getBillPlaceMockData, getBillMockData } from './mock/bill';
 
 import { getMenuMockData } from './mock/menu';
-import { getActivities, getNotice, getFakeList } from './mock/api';
+import { getActivities, getNotice, getFakeList, getRole, postLogin, getUserBySession } from './mock/api';
 import { getFakeChartData } from './mock/chart';
 import { imgMap } from './mock/utils';
 import { getProfileBasicData } from './mock/profile';
@@ -31,15 +29,13 @@ import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
 import { format, delay } from 'roadhog-api-doc';
 
-import { getDataPageViewData, getDataPageMockData, postDataPageMockData } from './mock/dataPage';
-import { getClientInfoPageViewData, getClientInfoPageMockData, postClientInfoPageMockData } from './mock/clientInfoPage';
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
 
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 const proxy = {
   // 支持值为 Object 和 Array
-  'GET /api/currentUser': {
+  'POST /api/currentUser': {
     $desc: "获取当前用户接口",
     $params: {
       pageSize: {
@@ -48,19 +44,19 @@ const proxy = {
       },
     },
     $body: {
-        "status":1,
-        "msg":"成功",
-        "dataMain":{
-              name: 'Serati Ma',
-              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-              userid: '00000001',
-              notifyCount: 12,
-              "deDeleted":false
-            }
+      "status":1,
+      "msg":"成功",
+      "dataMain":{
+        name: 'Serati Ma',
+        avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+        userid: '00000001',
+        notifyCount: 12,
+        "deDeleted":false
       }
+    }
   },
   // GET POST 可省略
-  'GET /api/users':{
+  'POST /api/users':{
     "status":1,
     "msg":"成功",
     "dataMain":[{
@@ -80,23 +76,23 @@ const proxy = {
       address: 'Sidney No. 1 Lake Park',
     }]
   },
-  'GET /api/project/notice': getNotice,
-  'GET /api/activities': getActivities,
+  'POST /api/project/notice': getNotice,
+  'POST /api/activities': getActivities,
   // 菜单数据
-  'GET /sys/menu':getMenuMockData,
+  'POST /login/menuListByRoleId.jspx':getMenuMockData,
   //select 外键数据
-  'GET /sys/unitSelect': getUnitSelectData,
-  'GET /data/examSelect': getExamNameSelectData,
-  'GET /data/examPlanSelect': getExamPlanNameSelectData,
-  'GET /data/examDataSelect': getExamDataSelectData,
-  'GET /data/subjectSelect': getSubjectSelectData,
-  'GET /data/areaSelect': getAreaSelectData,
-  'GET /machine/machineSelect':getUkeyMachineSelectData,
+  'POST /sys/unitSelect.jspx': getUnitSelectData,
+  'POST /data/examSelect.jspx': getExamNameSelectData,
+  'POST /data/examPlanSelect.jspx': getExamPlanNameSelectData,
+  'POST /data/examDataSelect.jspx': getExamDataSelectData,
+  'POST /data/subjectSelect.jspx': getSubjectSelectData,
+  'POST /data/areaSelect.jspx': getAreaSelectData,
+  'POST /machine/machineSelect.jspx':getUkeyMachineSelectData,
 
   // exam 增删改查
-  'GET /data/examView': getExamViewData,
-  'GET /data/examPage': getExamMockData,
-  'POST /data/exam': {
+  'POST /data/examView.jspx': getExamViewData,
+  'POST /data/examPage.jspx': getExamMockData,
+  'POST /data/exam.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -105,7 +101,7 @@ const proxy = {
     },
     $body: postExamMockData,
   },
-  'POST /data/examNameVerif': {
+  'POST /data/examNameVerif.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -115,9 +111,9 @@ const proxy = {
     $body: postExamNameVerif,
   },
   // examPlan 增删改查
-  'GET /data/examPlanView': getExamPlanViewData,
-  'GET /data/examPlanPage': getExamPlanMockData,
-  'POST /data/examPlan': {
+  'POST /data/examPlanView.jspx': getExamPlanViewData,
+  'POST /data/examPlanPage.jspx': getExamPlanMockData,
+  'POST /data/examPlan.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -126,7 +122,7 @@ const proxy = {
     },
     $body: postExamPlanMockData,
   },
-  'POST /data/examPlanNameVerify': {
+  'POST /data/examPlanNameVerify.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -136,11 +132,11 @@ const proxy = {
     $body: postExamPlanNameVerif,
   },
   // license 增删改查
-  'GET /data/licenseView': getLicenseViewData,
-  'GET /data/examineeView': getExamineeViewData,
-  'GET /data/photoView': getPhotoViewData,
-  'GET /data/licensePage': getLicenseMockData,
-  'POST /data/license': {
+  'POST /data/licenseView.jspx': getLicenseViewData,
+  'POST /data/examineeView.jspx': getExamineeViewData,
+  'POST /data/photoView.jspx': getPhotoViewData,
+  'POST /data/licensePage.jspx': getLicenseMockData,
+  'POST /data/license.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -149,7 +145,7 @@ const proxy = {
     },
     $body: postLicenseMockData,
   },
-  'POST /data/identityVerify': {
+  'POST /data/identityVerify.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -159,9 +155,9 @@ const proxy = {
     $body: postIdentityVerif,
   },
   // workMan 增删改查
-  'GET /data/workManView': getWorkManViewData,
-  'GET /data/workManPage': getWorkManMockData,
-  'POST /data/workMan': {
+  'POST /data/workManView.jspx': getWorkManViewData,
+  'POST /data/workManPage.jspx': getWorkManMockData,
+  'POST /data/workMan.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -171,9 +167,9 @@ const proxy = {
     $body: postWorkManMockData,
   },
   // place 增删改查
-  'GET /data/placeView': getPlaceViewData,
-  'GET /data/placePage': getPlaceMockData,
-  'POST /data/place': {
+  'POST /data/placeView.jspx': getPlaceViewData,
+  'POST /data/placePage.jspx': getPlaceMockData,
+  'POST /data/place.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -183,9 +179,9 @@ const proxy = {
     $body: postPlaceMockData,
   },
   // ExamData 增删改查
-  'GET /data/examDataView': getExamDataViewData,
-  'GET /data/examDataPage': getExamDataMockData,
-  'POST /data/examData': {
+  'POST /data/examDataView.jspx': getExamDataViewData,
+  'POST /data/examDataPage.jspx': getExamDataMockData,
+  'POST /data/examData.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -195,9 +191,9 @@ const proxy = {
     $body: postExamDataMockData,
   },
   // subject 增删改查
-  'GET /data/subjectView': getSubjectViewData,
-  'GET /data/subjectPage': getSubjectMockData,
-  'POST /data/subject': {
+  'POST /data/subjectView.jspx': getSubjectViewData,
+  'POST /data/subjectPage.jspx': getSubjectMockData,
+  'POST /data/subject.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -207,9 +203,9 @@ const proxy = {
     $body: postSubjectMockData,
   },
   // UkeyUse 增删改查
-  'GET /machine/ukeyUseView': getUkeyUseViewData,
-  'GET /machine/ukeyUsePage': getUkeyUseMockData,
-  'POST /machine/ukeyUse': {
+  'POST /machine/ukeyUseView.jspx': getUkeyUseViewData,
+  'POST /machine/ukeyUsePage.jspx': getUkeyUseMockData,
+  'POST /machine/ukeyUse.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -218,7 +214,7 @@ const proxy = {
     },
     $body: postUkeyUseMockData,
   },
-  'POST /machine/ukeyUseState': {
+  'POST /machine/ukeyUseState.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -228,7 +224,7 @@ const proxy = {
     $body: postUkeyUseStateMockData,
   },
   // Ukey 增删改查
-  'POST /machine/ukeyIdVerify':{
+  'POST /machine/ukeyIdVerify.jspx':{
     $params: {
       pageSize: {
         desc: '分页',
@@ -237,9 +233,9 @@ const proxy = {
     },
     $body: postUkeyIdVerif,
   },
-  'GET /machine/ukeyView': getUkeyViewData,
-  'GET /machine/ukeyPage': getUkeyMockData,
-  'POST /machine/ukey': {
+  'POST /machine/ukeyView.jspx': getUkeyViewData,
+  'POST /machine/ukeyPage.jspx': getUkeyMockData,
+  'POST /machine/ukey.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -249,9 +245,9 @@ const proxy = {
     $body: postUkeyMockData,
   },
   // UkeyProgram 增删改查
-  'GET /machine/ukeyProgramView': getUkeyProgramViewData,
-  'GET /machine/ukeyProgramPage': getUkeyProgramMockData,
-  'POST /machine/ukeyProgram': {
+  'POST /machine/ukeyProgramView.jspx': getUkeyProgramViewData,
+  'POST /machine/ukeyProgramPage.jspx': getUkeyProgramMockData,
+  'POST /machine/ukeyProgram.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -261,13 +257,13 @@ const proxy = {
     $body: postUkeyProgramMockData,
   },
   // billPlace 增删改查
-  'GET /machine/billPlacePage': getBillPlaceMockData,
+  'POST /machine/billPlacePage.jspx': getBillPlaceMockData,
   // bill 增删改查
-  'GET /machine/billPage': getBillMockData,
+  'POST /machine/billPage.jspx': getBillMockData,
   // Machine 增删改查
-  'GET /machine/machineView': getMachineViewData,
-  'GET /machine/machinePage': getMachineMockData,
-  'POST /machine/machine': {
+  'POST /machine/machineView.jspx': getMachineViewData,
+  'POST /machine/machinePage.jspx': getMachineMockData,
+  'POST /machine/machine.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -277,9 +273,9 @@ const proxy = {
     $body: postMachineMockData,
   },
   // Template 增删改查
-  'GET /skin/templateView': getTemplateViewData,
-  'GET /skin/templatePage': getTemplateMockData,
-  'POST /skin/template': {
+  'POST /skin/templateView.jspx': getTemplateViewData,
+  'POST /skin/templatePage.jspx': getTemplateMockData,
+  'POST /skin/template.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -288,11 +284,11 @@ const proxy = {
     },
     $body: postTemplateMockData,
   },
-  'POST /skin/templateNameVerif': postTemplateVerif,
+  'POST /skin/templateNameVerif.jspx': postTemplateVerif,
   // SkinUse 增删改查
-  'GET /skin/skinUseView': getSkinUseViewData,
-  'GET /skin/skinUsePage': getSkinUseMockData,
-  'POST /skin/skinUse': {
+  'POST /skin/skinUseView.jspx': getSkinUseViewData,
+  'POST /skin/skinUsePage.jspx': getSkinUseMockData,
+  'POST /skin/skinUse.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -301,22 +297,22 @@ const proxy = {
     },
     $body: postSkinUseMockData,
   },
-  // TemplatePage 增删改查
-  'GET /msg/templateView': getTemplatePageViewData,
-  'GET /msg/templatePage': getTemplatePageMockData,
-  'POST /msg/template': {
+  // Skin 增删改查
+  'POST /skin/skinView.jspx': getSkinViewData,
+  'POST /skin/skinPage.jspx': getSkinMockData,
+  'POST /skin/skin.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
         exp: 2,
       },
     },
-    $body: postTemplatePageMockData,
+    $body: postSkinMockData,
   },
   // SkinPage 增删改查
-  'GET /skin/skinView': getSkinPageViewData,
-  'GET /skin/skinPage': getSkinPageMockData,
-  'POST /skin/skinPage': {
+  'POST /skin/pageView.jspx': getSkinPageViewData,
+  'POST /skin/pagePage.jspx': getSkinPageMockData,
+  'POST /skin/page.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -325,69 +321,10 @@ const proxy = {
     },
     $body: postSkinPageMockData,
   },
-  // TemplatePage 增删改查
-  'GET /msg/templateView': getTemplatePageViewData,
-  'GET /msg/templatePage': getTemplatePageMockData,
-  'POST /msg/template': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postTemplatePageMockData,
-  },
-  // TaskPage 增删改查
-  'GET /msg/taskView': getTaskPageViewData,
-  'GET /msg/taskPage': getTaskPageMockData,
-  'POST /msg/task': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postTaskPageMockData,
-  },
-  // dataPage 增删改查
-  'GET /face/dataView': getDataPageViewData,
-  'GET /face/dataPage': getDataPageMockData,
-  'POST /face/dataPage': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postDataPageMockData,
-  },
 
-  // clientInfoPage 增删改查
-  'GET /face/clientInfoView': getClientInfoPageViewData,
-  'GET /face/clientInfoPage': getClientInfoPageMockData,
-  'POST /face/clientInfoPage': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postClientInfoPageMockData,
-  },
-  // SendRecordPage 增删改查
-  'GET /msg/sendRecordView': getSendRecordPageViewData,
-  'GET /msg/sendRecordPage': getSendRecordPageMockData,
-  'POST /msg/sendRecord': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postSendRecordPageMockData,
-  },
-  'GET /api/table': getTable,
-  'GET /api/check': getCheckData,
+  'POST /login/userRoleListByUserId.jspx': getRole,
+  'POST /api/table': getTable,
+  'POST /api/check': getCheckData,
   'POST /api/table': {
     $params: {
       pageSize: {
@@ -400,26 +337,38 @@ const proxy = {
   'POST /api/forms': (req, res) => {
     res.send({ message: 'Ok' });
   },
-  'GET /api/tags': mockjs.mock({
+  'POST /api/tags': mockjs.mock({
     'list|100': [{ name: '@city', 'value|1-100': 150, 'type|0-2': 1 }]
   }),
-  'GET /api/fake_list': getFakeList,
-  'GET /api/fake_chart_data': getFakeChartData,
-  'GET /api/profile/basic': getProfileBasicData,
-  'GET /api/profile/advanced': getProfileAdvancedData,
-  'POST /api/login/account': (req, res) => {
-    const { password, userName, type } = req.body;
+  'POST /api/fake_list': getFakeList,
+  'POST /api/fake_chart_data': getFakeChartData,
+  'POST /api/profile/basic': getProfileBasicData,
+  'POST /api/profile/advanced': getProfileAdvancedData,
+  // 登录页
+  'POST /login/userLogin.jspx': postLogin,
+  //更新session
+  'POST /login/userRoleSessionUpdate.jspx':(req, res) => {
     res.send({
-      status: password === '888888' && userName === 'admin' ? 'ok' : 'error',
-      type,
+      "status":'1',
+      "msg":"成功"
     });
   },
+  //更新session
+  'POST /login/examPlanSessionUpdate.jspx': (req, res) => {
+    res.send({
+      "status":'1',
+      "msg":"成功"
+    });
+  },
+  'POST /login/userViewBySession.jspx': getUserBySession,
   'POST /api/register': (req, res) => {
     res.send({ status: 'ok' });
   },
-  'GET /api/notices': getNotices,
+  'POST /api/notices': getNotices,
 };
-
-
-//  如果开发环境，delay函数模拟延迟，如果是生产环境，则不启服务
+// 如果开发环境，delay函数模拟延迟，如果是生产环境，则不启服务
 export default noProxy ? {} : delay(proxy, 1000);
+// export default {
+//   'GET /(.*)': 'http://192.168.12.67:8080/safe/',
+//   'POST /(.*)': 'http://192.168.12.67:8080/safe/',
+// };
