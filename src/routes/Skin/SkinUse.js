@@ -5,10 +5,10 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, Badg
 import moment from 'moment';
 import ExamTable from '../../components/ExamTable';
 import AddOrUpdateModal from '../../components/AddOrUpdateModal';
-import styles from './Common.less';
+import styles from '../Face/Common.less';
 import request from '../../utils/request';
 import { convertUrl } from '../../utils/utils';
-
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 const FormItem = Form.Item;
 // es6对象的解构赋值
 const { Option } = Select;
@@ -28,6 +28,7 @@ export default class SkinUse extends PureComponent {
     queryFormValues: {},
     addOrUpdate: '',
     key: '',
+    expandForm: false,
   };
 
   componentDidMount() {
@@ -84,6 +85,12 @@ export default class SkinUse extends PureComponent {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  }
+  // 切换查询面板收放
+  toggleForm = () => {
+    this.setState({
+      expandForm: !this.state.expandForm,
+    });
   }
   // 列表批量操作
   handleBatchClick = (e) => {
@@ -262,6 +269,48 @@ export default class SkinUse extends PureComponent {
               )}
             </FormItem>
           </Col>
+
+          <Col md={8} sm={24} style={{ float: 'right', marginBottom: 24, marginRight: -84 }}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">查询</Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              展开 <Icon type="down" />
+            </a>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+// 渲染复杂查询
+  renderAdvancedQueryForm() {
+    const { skinUse: { unitSelectData } } = this.props;
+    const unitOptions = [];
+    if (unitSelectData) {
+      unitSelectData.dataMain.list.map(item =>
+        unitOptions.push(<Option key={item.key} value={item.key}>{item.val}</Option>)
+      );
+    }
+
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="考试计划外键">
+              {getFieldDecorator('ssuPlanId')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="模板名称">
+              {getFieldDecorator('ssuPlanId')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <FormItem label="行政区外键">
               {getFieldDecorator('ssuAreaId')(
@@ -276,7 +325,7 @@ export default class SkinUse extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem label="状态">
               {getFieldDecorator('stIsDeleted', { initialValue: 'false' })(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -290,13 +339,19 @@ export default class SkinUse extends PureComponent {
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">查询</Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              收起 <Icon type="up" />
+            </a>
             </span>
           </Col>
         </Row>
       </Form>
     );
   }
-
+  // 渲染查询面板
+  renderQueryForm() {
+    return this.state.expandForm ? this.renderAdvancedQueryForm() : this.renderSimpleQueryForm();
+  }
   render() {
     const { skinUse: { loading: skinUseLoading, data, viewData } } = this.props;
     const { selectedRows, addModalVisible, addOrUpdate, key } = this.state;
@@ -385,11 +440,11 @@ export default class SkinUse extends PureComponent {
       <Menu onClick={this.handleBatchClick} selectedKeys={[]} />
     );
     return (
-      <div>
+      <PageHeaderLayout>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleQueryForm()}
+              {this.renderQueryForm()}
             </div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.handleAddClick}>
@@ -427,7 +482,7 @@ export default class SkinUse extends PureComponent {
           addOrUpdate={addOrUpdate}
           key={key}
         />
-      </div>
+      </PageHeaderLayout>
     );
   }
 }

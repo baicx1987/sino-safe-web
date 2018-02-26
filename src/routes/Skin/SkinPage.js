@@ -4,12 +4,12 @@ import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, Badge, Modal, Divider } from 'antd';
 import moment from 'moment';
 
-import ExamTable from '../../components/ExamTable';
-import AddOrUpdateModal from '../../components/AddOrUpdateModal';
+import ExamTable from '../../components/ExamTable/index';
+import AddOrUpdateModal from '../../components/AddOrUpdateModal/index';
 import styles from './Common.less';
 import request from '../../utils/request';
 import { convertUrl } from '../../utils/utils';
-
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 const FormItem = Form.Item;
 // es6对象的解构赋值
 const { Option } = Select;
@@ -22,13 +22,14 @@ const tableDelete = 'ssIsDeleted';
   skinPage: state.skinPage,
 }))
 @Form.create()
-export default class skinPage extends PureComponent {
+export default class SkinPage extends PureComponent {
   state = {
     addModalVisible: false,
     selectedRows: [],
     queryFormValues: {},
     addOrUpdate: '',
     key: '',
+    expandForm: false,
   };
 
   componentDidMount() {
@@ -85,6 +86,12 @@ export default class skinPage extends PureComponent {
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+  }
+  // 切换查询面板收放
+  toggleForm = () => {
+    this.setState({
+      expandForm: !this.state.expandForm,
+    });
   }
   // 列表批量操作
   handleBatchClick = (e) => {
@@ -173,7 +180,7 @@ export default class skinPage extends PureComponent {
       // 删除
       case 'remove':
         confirm({
-          title: '确定删除此次考试吗?',
+          title: '确定删除此条信息吗?',
           content: '',
           okText: '确定',
           okType: 'danger',
@@ -250,7 +257,7 @@ export default class skinPage extends PureComponent {
       <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="模板名称">
+            <FormItem label="皮肤名称">
               {getFieldDecorator('ssName')(
                 <Input placeholder="请输入" />
               )}
@@ -264,7 +271,49 @@ export default class skinPage extends PureComponent {
             </FormItem>
           </Col>
 
+          <Col md={8} sm={24} style={{ float: 'right', marginBottom: 24, marginRight: -84 }}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">查询</Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              展开 <Icon type="down" />
+              </a>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+// 渲染复杂查询
+  renderAdvancedQueryForm() {
+    const { skinPage: { unitSelectData } } = this.props;
+    const unitOptions = [];
+    if (unitSelectData) {
+      unitSelectData.dataMain.list.map(item =>
+        unitOptions.push(<Option key={item.key} value={item.key}>{item.val}</Option>)
+      );
+    }
+
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form onSubmit={this.handleSubmitQueryForm} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
+            <FormItem label="皮肤名称">
+              {getFieldDecorator('ssName')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="域名">
+              {getFieldDecorator('ssDomainName')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+
+          <Col md={3} sm={24}>
             <FormItem label="状态">
               {getFieldDecorator('ssIsDeleted', { initialValue: 'false' })(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -278,13 +327,19 @@ export default class skinPage extends PureComponent {
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">查询</Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              收起 <Icon type="up" />
+              </a>
             </span>
           </Col>
         </Row>
       </Form>
     );
   }
-
+  // 渲染查询面板
+  renderQueryForm() {
+    return this.state.expandForm ? this.renderAdvancedQueryForm() : this.renderSimpleQueryForm();
+  }
   render() {
     const { skinPage: { loading: skinPageLoading, data, viewData } } = this.props;
     const { selectedRows, addModalVisible, addOrUpdate, key } = this.state;
@@ -302,24 +357,16 @@ export default class skinPage extends PureComponent {
         dataIndex: 'ssRemark',
       },
       {
-        title: '访问域名',
+        title: '人域名',
         dataIndex: 'ssDomainName',
       },
       {
-        title: '访问域名',
-        dataIndex: 'ssState',
-      },
-      {
-        title: '访问域名',
-        dataIndex: 'ssState',
-      },
-      {
-        title: '访问域名',
-        dataIndex: 'ssState',
+        title: '皮肤ID',
+        dataIndex: 'ssSkinId',
       },
       {
         title: '状态',
-        dataIndex: 'stIsDeleted',
+        dataIndex: 'ssIsDeleted',
         sorter: true,
         render(val) {
           return (<Badge
@@ -341,43 +388,49 @@ export default class skinPage extends PureComponent {
         ),
       },
     ];
-    const addColumns = [
-      {
-        title: '模板名称',
-        dataIndex: 'stName',
-        type: 'input',
-        validator: this.handleskinPageNameChange,
-        required: true,
-      },
-      {
-        title: '模板备注',
-        dataIndex: 'stRemark',
-        type: 'input',
-        required: true,
-      },
-      {
-        title: '模板数据',
-        dataIndex: 'stData',
-        type: 'input',
-        required: true,
-      },
-      {
-        title: '模板类型',
-        dataIndex: 'stType',
-        type: 'input',
-        required: true,
-      },
-    ];
+     const addColumns = [
+       {
+         title: '皮肤名称',
+         dataIndex: 'ssName',
+         type: 'input',
+         validator: this.handleskinPageNameChange,
+         required: true,
+       },
+       {
+         title: '皮肤备注',
+         dataIndex: 'ssRemark',
+         type: 'input',
+         required: true,
+       },
+       {
+         title: '访问域名',
+         dataIndex: 'ssDomainName',
+         type: 'input',
+         required: true,
+       },
+       {
+         title: '皮肤ID',
+         dataIndex: 'ssSkinId',
+         type: 'input',
+         required: true,
+       },
+       {
+         title: '皮肤状态',
+         dataIndex: 'ssState',
+         type: 'input',
+         required: true,
+       },
+     ];
     const detailColumns = [
       {
         title: '创建时间',
-        dataIndex: 'stGmtCreate',
+        dataIndex: 'ssGmtCreate',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
       {
         title: '最后操作时间',
-        dataIndex: 'stGmtModified',
+        dataIndex: 'ssGmtModified',
         sorter: true,
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
@@ -386,11 +439,11 @@ export default class skinPage extends PureComponent {
       <Menu onClick={this.handleBatchClick} selectedKeys={[]} />
     );
     return (
-      <div>
+      <PageHeaderLayout>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleQueryForm()}
+              {this.renderQueryForm()}
             </div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.handleAddClick}>
@@ -428,7 +481,7 @@ export default class skinPage extends PureComponent {
           addOrUpdate={addOrUpdate}
           key={key}
         />
-      </div>
+      </PageHeaderLayout>
     );
   }
 }
