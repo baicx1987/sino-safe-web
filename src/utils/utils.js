@@ -118,7 +118,7 @@ export function convertUrl(url, flag) {
       return `http:localhost:8000${url}.jspx`;
     }
   }
-  return url;
+  return `${url}.jspx`;
 }
 
 Date.prototype.Format = function (fmt) {

@@ -289,10 +289,82 @@ export const getActivities = [
     template: '在 @{group} 新建项目 @{project}',
   },
 ];
+export const getRole =
+  {
+    status: '1',
+    msg: '成功',
+    dataMain: {
+      list: [
+        {
+          surId: 'dfdfsdfwerwer234234sdfdf',
+          surUserId: '23423423423sfsdfsdfsf',
+          surUserLogin: '13522273491',
+          surUserName: '白晨星',
+          surAreaName: '北京市',
+          surUnitName: '司法部',
+          surRoleName: '通用省厅角色',
+          surGmtCreate: '2017-12-12 12:12:12',
+          surGmtModified: '2017-12-12 12:12:12',
+          surIsDeleted: false,
+        },
+        {
+          surId: 'dfdfsdfwerwer234234sdfdf2',
+          surUserId: '23423423423sfsdfsdfsf2',
+          surUserLogin: '135222734912',
+          surUserName: '白晨星2',
+          surAreaName: '北京市',
+          surUnitName: '司法部',
+          surRoleName: '通用省厅角色2',
+          surGmtCreate: '2017-12-12 12:12:12',
+          surGmtModified: '2017-12-12 12:12:12',
+          surIsDeleted: false,
+        }],
+    },
+  };
+export const getUserBySession =
+  {
+    status: '1',
+    msg: '成功',
+    dataMain: {
+      sessionUserVo: {
+        sesId: 'dfdfsdfwerwer234234sdfdf',
+        sesUserLogin: '13522273491',
+        sesUserName: '白晨星',
+        sesAreaId: '123123123123123sasd',
+        sesAreaName: '北京市',
+        sesUnitId: '123123123123123sasd',
+        sesUnitName: '司法部',
+        sesRoleId: '123123123123123sasd',
+        sesRoleName: '通用省厅角色',
+        sesPlanId: 'dfdfsdfwerwer23423d4sdfdf1',
+        sesPlanName: '2017年司法考试计划',
+        sesGmtCreate: '2017-12-12 12:12:12',
+        sesGmtModified: '2017-12-12 12:12:12',
+      },
+    },
+  };
+export function postLogin(req, res, u, b) {
+  let url = u;
+  if (!url || Object.prototype.toString.call(url) !== '[object String]') {
+    url = req.url; // eslint-disable-line
+  }
 
+  const result = {
+    status: '1',
+    msg: '成功',
+    dataMain: {
+      loginVo: {
+        loginUrl: 'index',
+      },
+    },
+  };
 
+  if (res && res.json) {
+    res.json(result);
+  } else {
+    return result;
+  }
+}
 export default {
-  getNotice,
-  getActivities,
-  getFakeList,
+  postLogin,
 };
