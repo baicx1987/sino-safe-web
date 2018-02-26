@@ -59,5 +59,25 @@ const mapModelAndComponent = {
     modelArry: ['skin/skinPage'],
     init: () => import('../routes/Skin/SkinPage'),
   },
+  templatePage: {
+    modelArry: ['msg/templatePage'],
+    init: () => import('../routes/Msg/TemplatePage'),
+  },
+  taskPage: {
+    modelArry: ['msg/taskPage'],
+    init: () => import('../routes/Msg/TaskPage'),
+  },
+  sendRecordPage: {
+    modelArry: ['msg/sendRecordPage'],
+    init: () => import('../routes/Msg/SendRecordPage'),
+  },
+  dataPage: {
+    modelArry: ['face/dataPage'],
+    init: () => import('../routes/Face/DataPage'),
+  },
+  clientInfoPage: {
+    modelArry: ['face/clientInfoPage'],
+    init: () => import('../routes/Face/ClientInfoPage'),
+  },
 };
 export { mapModelAndComponent };
