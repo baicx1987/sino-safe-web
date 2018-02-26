@@ -398,7 +398,7 @@ const proxy = {
   // dataPage 增删改查
   'POST /face/dataView.jspx': getDataPageViewData,
   'POST /face/dataPage.jspx': getDataPageMockData,
-  'POST /face/dataPage.jspx': {
+  'POST /face/data.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
@@ -411,7 +411,7 @@ const proxy = {
   // clientInfoPage 增删改查
   'POST /face/clientInfoView.jspx': getClientInfoPageViewData,
   'POST /face/clientInfoPage.jspx': getClientInfoPageMockData,
-  'POST /face/clientInfoPage.jspx': {
+  'POST /face/clientInfo.jspx': {
     $params: {
       pageSize: {
         desc: '分页',
