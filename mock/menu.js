@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import { getUrlParams } from './utils';
 
 export function getMenuMockData(req, res, u) {
@@ -12,7 +13,7 @@ export function getMenuMockData(req, res, u) {
     {
       name: '基础数据管理',
       path: 'baseData',
-      icon: 'check-circle-o',
+      icon: 'database',
       children: [
         {
           name: '考试数据管理',
@@ -47,7 +48,7 @@ export function getMenuMockData(req, res, u) {
     {
       name: '硬件设备管理',
       path: 'machineData',
-      icon: 'check-circle-o',
+      icon: 'usb',
       children: [
         {
           name: 'U盾使用管理',
@@ -73,7 +74,7 @@ export function getMenuMockData(req, res, u) {
     }, {
       name: '皮肤管理',
       path: 'skinData',
-      icon: 'check-circle-o',
+      icon: 'skin',
       children: [
         {
           name: '模板管理',
@@ -86,6 +87,40 @@ export function getMenuMockData(req, res, u) {
         {
           name: '皮肤管理',
           path: 'skinPage',
+        },
+      ],
+    },
+    {
+      name: '消息管理',
+      path: 'msgData',
+      icon: 'message',
+      children: [
+        {
+          name: '短信模板管理',
+          path: 'templatePage',
+        },
+        {
+          name: '短信发送任务',
+          path: 'taskPage',
+        },
+        {
+          name: '短信发送记录',
+          path: 'sendRecordPage',
+        },
+      ],
+    },
+    {
+      name: '人像识别管理',
+      path: 'faceData',
+      icon: 'safety',
+      children: [
+        {
+          name: '人像数据识别管理',
+          path: 'dataPage',
+        },
+        {
+          name: '人像识别终端数据管理',
+          path: 'clientInfoPage',
         },
       ],
     }];
