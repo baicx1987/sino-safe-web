@@ -15,6 +15,10 @@ import { getUkeyViewData, getUkeyMockData, postUkeyMockData, postUkeyIdVerif } f
 import { getMachineViewData, getMachineMockData, postMachineMockData } from './mock/machine';
 import { getTemplateViewData, getTemplateMockData, postTemplateMockData, postTemplateVerif } from './mock/template';
 import { getSkinUseViewData, getSkinUseMockData, postSkinUseMockData } from './mock/skinUse';
+import { getSkinPageViewData, getSkinPageMockData, postSkinPageMockData } from './mock/skinPage';
+import { getTemplatePageViewData, getTemplatePageMockData, postTemplatePageMockData } from './mock/templatePage';
+import { getTaskPageViewData, getTaskPageMockData, postTaskPageMockData } from './mock/taskPage';
+import { getSendRecordPageViewData, getSendRecordPageMockData, postSendRecordPageMockData } from './mock/sendRecordPage';
 import { getUkeyProgramViewData, getUkeyProgramMockData, postUkeyProgramMockData } from './mock/ukeyProgram';
 import { getBillPlaceMockData, getBillMockData } from './mock/bill';
 
@@ -27,6 +31,8 @@ import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
 import { format, delay } from 'roadhog-api-doc';
 
+import { getDataPageViewData, getDataPageMockData, postDataPageMockData } from './mock/dataPage';
+import { getClientInfoPageViewData, getClientInfoPageMockData, postClientInfoPageMockData } from './mock/clientInfoPage';
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
 
@@ -295,7 +301,91 @@ const proxy = {
     },
     $body: postSkinUseMockData,
   },
+  // TemplatePage 增删改查
+  'GET /msg/templateView': getTemplatePageViewData,
+  'GET /msg/templatePage': getTemplatePageMockData,
+  'POST /msg/template': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postTemplatePageMockData,
+  },
+  // SkinPage 增删改查
+  'GET /skin/skinView': getSkinPageViewData,
+  'GET /skin/skinPage': getSkinPageMockData,
+  'POST /skin/skinPage': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postSkinPageMockData,
+  },
+  // TemplatePage 增删改查
+  'GET /msg/templateView': getTemplatePageViewData,
+  'GET /msg/templatePage': getTemplatePageMockData,
+  'POST /msg/template': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postTemplatePageMockData,
+  },
+  // TaskPage 增删改查
+  'GET /msg/taskView': getTaskPageViewData,
+  'GET /msg/taskPage': getTaskPageMockData,
+  'POST /msg/task': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postTaskPageMockData,
+  },
+  // dataPage 增删改查
+  'GET /face/dataView': getDataPageViewData,
+  'GET /face/dataPage': getDataPageMockData,
+  'POST /face/dataPage': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postDataPageMockData,
+  },
 
+  // clientInfoPage 增删改查
+  'GET /face/clientInfoView': getClientInfoPageViewData,
+  'GET /face/clientInfoPage': getClientInfoPageMockData,
+  'POST /face/clientInfoPage': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postClientInfoPageMockData,
+  },
+  // SendRecordPage 增删改查
+  'GET /msg/sendRecordView': getSendRecordPageViewData,
+  'GET /msg/sendRecordPage': getSendRecordPageMockData,
+  'POST /msg/sendRecord': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postSendRecordPageMockData,
+  },
   'GET /api/table': getTable,
   'GET /api/check': getCheckData,
   'POST /api/table': {
@@ -329,5 +419,7 @@ const proxy = {
   },
   'GET /api/notices': getNotices,
 };
+
+
 //  如果开发环境，delay函数模拟延迟，如果是生产环境，则不启服务
 export default noProxy ? {} : delay(proxy, 1000);
