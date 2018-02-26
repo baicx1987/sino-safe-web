@@ -6,19 +6,19 @@ let tableListDataSource = [];
 
 for (let i = 0; i < 46; i += 1) {
   tableListDataSource.push({
-    ssId: `${i}`,
-    "ssName":"司法考试皮肤",
-    "ssRemark":"国家司法考试皮肤",
-    "ssDomainName":"www.baidu.com",
-    "ssSkinId":"010232",
-    "ssState":1,
-    "ssResourceId":"asd4q65w46asdas",
-    "ssGmtCreate":"2017-12-12 12:12:12",
-    "ssGmtModified":"2017-12-12 12:12:12",
-    "ssIsDeleted":false,
+    msrId: `${i}`,
+    msrMessage: '短信内容',
+    msrTaskId: '发送任务',
+    taskName: '发送任务名称',
+    msrState: 1,
+    msrReceiveName: '接收人姓名',
+    msrReceivePhone: '接收人电话',
+    msrGmtCreate: '2017-12-12 12:12:12',
+    msrGmtModified: '2017-12-12 12:12:12',
+    msrIsDeleted: false,
   });
 }
-export function getSkinPageMockData(req, res, u) {
+export function getSendRecordPageMockData(req, res, u) {
   let url = u;
   if (!url || Object.prototype.toString.call(url) !== '[object String]') {
     url = req.url; // eslint-disable-line
@@ -67,7 +67,7 @@ export function getSkinPageMockData(req, res, u) {
     return result;
   }
 }
-export function getSkinPageViewData(req, res, u) {
+export function getSendRecordPageViewData(req, res, u) {
   let url = u;
   if (!url || Object.prototype.toString.call(url) !== '[object String]') {
     url = req.url; // eslint-disable-line
@@ -77,17 +77,17 @@ export function getSkinPageViewData(req, res, u) {
     status: '1',
     msg: '成功',
     dataMain: {
-      skinSkinVo: {
-        "ssId":"dfdfsdfwerwer234234sdfdf",
-        "ssName":"司法考试皮肤",
-        "ssRemark":"国家司法考试皮肤",
-        "ssDomainName":"www.baidu.com",
-        "ssSkinId":"010232",
-        "ssState":2,
-        "ssResourceId":"554as65as4dqwdasdsdas",
-        "ssGmtCreate":"2017-12-12 12:12:12",
-        "ssGmtModified":"2017-12-12 12:12:12",
-        "ssIsDeleted":false,
+      msgSendRecordVo: {
+        msrId: 'dfdfsdfwerwer234234sdfdf',
+        msrMessage: '短信内容',
+        msrTaskId: '发送任务',
+        taskName: '发送任务名称',
+        msrState: '发送状态',
+        msrReceiveName: '接收人姓名',
+        msrReceivePhone: '接收人电话',
+        msrGmtCreate: '2017-12-12 12:12:12',
+        msrGmtModified: '2017-12-12 12:12:12',
+        msrIsDeleted: false,
       },
     },
   };
@@ -98,24 +98,24 @@ export function getSkinPageViewData(req, res, u) {
     return result;
   }
 }
-export function postSkinPageMockData(req, res, u, b) {
+export function postSendRecordPageMockData(req, res, u, b) {
   let url = u;
   if (!url || Object.prototype.toString.call(url) !== '[object String]') {
     url = req.url; // eslint-disable-line
   }
 
   const body = (b && b.body) || req.body;
-  const { method, ssId } = body;
+  const { method, msrId } = body;
 
   switch (method) {
     /* eslint no-case-declarations:0 */
     case 'remove':
-      tableListDataSource = tableListDataSource.filter(item => ssId.indexOf(item.ssId) === -1);
+      tableListDataSource = tableListDataSource.filter(item => msrId.indexOf(item.msrId) === -1);
       break;
     case 'update':
       tableListDataSource = tableListDataSource.map(
         (item) => {
-          if (item.ssId === ssId) {
+          if (item.msrId === msrId) {
             // item.deExamName = deExamName;
             // item.deExamRemark = deExamRemark;
             // item.deUnitName = deUnitName;
@@ -144,7 +144,7 @@ export function postSkinPageMockData(req, res, u, b) {
 }
 
 export default {
-  getSkinPageViewData,
-  getSkinPageMockData,
-  postSkinPageMockData,
+  getSendRecordPageViewData,
+  getSendRecordPageMockData,
+  postSendRecordPageMockData,
 };

@@ -6,19 +6,25 @@ let tableListDataSource = [];
 
 for (let i = 0; i < 46; i += 1) {
   tableListDataSource.push({
-    ssId: `${i}`,
-    "ssName":"司法考试皮肤",
-    "ssRemark":"国家司法考试皮肤",
-    "ssDomainName":"www.baidu.com",
-    "ssSkinId":"010232",
-    "ssState":1,
-    "ssResourceId":"asd4q65w46asdas",
-    "ssGmtCreate":"2017-12-12 12:12:12",
-    "ssGmtModified":"2017-12-12 12:12:12",
-    "ssIsDeleted":false,
+    mtId: `${i}`,
+    mtName: '模板名称',
+    mtMessage: '模板内容',
+    mtWordsSum: '模板字数',
+    mtState: '状态',
+    mtPlanId: 'd1s2f3sd1f2sd31fd32sf',
+    mtSuerId: 'd1s2f3sd1f2sd31fd32sf',
+    mtAreaId: 'd1s2f3sd1f2sd31fd32sf',
+    mtUnitId: 'd1s2f3sd1f2sd31fd32sf',
+    planName: '司法考试',
+    userName: '白晨星',
+    areaName: '北京市',
+    unitName: '信诺软通',
+    mtGmtCreate: '2017-12-12 12:12:12',
+    mtGmtModified: '2017-12-12 12:12:12',
+    mtIsDeleted: false,
   });
 }
-export function getSkinPageMockData(req, res, u) {
+export function getTemplatePageMockData(req, res, u) {
   let url = u;
   if (!url || Object.prototype.toString.call(url) !== '[object String]') {
     url = req.url; // eslint-disable-line
@@ -67,7 +73,7 @@ export function getSkinPageMockData(req, res, u) {
     return result;
   }
 }
-export function getSkinPageViewData(req, res, u) {
+export function getTemplatePageViewData(req, res, u) {
   let url = u;
   if (!url || Object.prototype.toString.call(url) !== '[object String]') {
     url = req.url; // eslint-disable-line
@@ -77,17 +83,23 @@ export function getSkinPageViewData(req, res, u) {
     status: '1',
     msg: '成功',
     dataMain: {
-      skinSkinVo: {
-        "ssId":"dfdfsdfwerwer234234sdfdf",
-        "ssName":"司法考试皮肤",
-        "ssRemark":"国家司法考试皮肤",
-        "ssDomainName":"www.baidu.com",
-        "ssSkinId":"010232",
-        "ssState":2,
-        "ssResourceId":"554as65as4dqwdasdsdas",
-        "ssGmtCreate":"2017-12-12 12:12:12",
-        "ssGmtModified":"2017-12-12 12:12:12",
-        "ssIsDeleted":false,
+      msgTemplateVo: {
+        mtId: 'dfdfsdfwerwer234234sdfdf',
+        mtName: '模板名称',
+        mtMessage: '模板内容',
+        mtWordsSum: '模板字数',
+        mtState: '状态',
+        mtPlanId: 'd1s2f3sd1f2sd31fd32sf',
+        mtSuerId: 'd1s2f3sd1f2sd31fd32sf',
+        mtAreaId: 'd1s2f3sd1f2sd31fd32sf',
+        mtUnitId: 'd1s2f3sd1f2sd31fd32sf',
+        planName: '司法考试',
+        userName: '白晨星',
+        areaName: '北京市',
+        unitName: '信诺软通',
+        mtGmtCreate: '2017-12-12 12:12:12',
+        mtGmtModified: '2017-12-12 12:12:12',
+        mtIsDeleted: false,
       },
     },
   };
@@ -98,24 +110,24 @@ export function getSkinPageViewData(req, res, u) {
     return result;
   }
 }
-export function postSkinPageMockData(req, res, u, b) {
+export function postTemplatePageMockData(req, res, u, b) {
   let url = u;
   if (!url || Object.prototype.toString.call(url) !== '[object String]') {
     url = req.url; // eslint-disable-line
   }
 
   const body = (b && b.body) || req.body;
-  const { method, ssId } = body;
+  const { method, mtId } = body;
 
   switch (method) {
     /* eslint no-case-declarations:0 */
     case 'remove':
-      tableListDataSource = tableListDataSource.filter(item => ssId.indexOf(item.ssId) === -1);
+      tableListDataSource = tableListDataSource.filter(item => mtId.indexOf(item.mtId) === -1);
       break;
     case 'update':
       tableListDataSource = tableListDataSource.map(
         (item) => {
-          if (item.ssId === ssId) {
+          if (item.mtId === mtId) {
             // item.deExamName = deExamName;
             // item.deExamRemark = deExamRemark;
             // item.deUnitName = deUnitName;
@@ -144,7 +156,7 @@ export function postSkinPageMockData(req, res, u, b) {
 }
 
 export default {
-  getSkinPageViewData,
-  getSkinPageMockData,
-  postSkinPageMockData,
+  getTemplatePageViewData,
+  getTemplatePageMockData,
+  postTemplatePageMockData,
 };
