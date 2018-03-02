@@ -6,7 +6,7 @@ let tableListDataSource = [];
 
 for (let i = 0; i < 46; i += 1) {
   tableListDataSource.push({
-     fciId: `${i}`,
+    fciId: `${i}`,
     "fciPlanId":"sdljklfkasdlkfjslkfdjalsdjf",
     "fciAreaId":"alkdsjflkajsdifwjeoijfwoiejf",
     "fciPlaceId":"asd4f65a4sd6fwe5v5d4va65s1dv65",
@@ -128,7 +128,7 @@ export function postClientInfoPageMockData(req, res, u, b) {
   switch (method) {
     /* eslint no-case-declarations:0 */
     case 'remove':
-      tableListDataSource = tableListDataSource.filter(item =>  fciId.indexOf(item.fciId) === -1);
+      tableListDataSource = tableListDataSource.filter(item => fciId.indexOf(item.fciId) === -1);
       break;
     case 'update':
       tableListDataSource = tableListDataSource.map(
