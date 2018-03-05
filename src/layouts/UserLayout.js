@@ -6,6 +6,7 @@ import { Icon } from 'antd';
 import GlobalFooter from '../components/GlobalFooter';
 import styles from './UserLayout.less';
 import logo from '../assets/logo.svg';
+import App from '../App';
 
 const links = [{
   title: '帮助',
@@ -19,7 +20,7 @@ const links = [{
 }];
 
 const copyright = <div>Copyright <Icon type="copyright" /> 2017 蚂蚁金服体验技术部出品</div>;
-
+@App
 class UserLayout extends React.PureComponent {
   static childContextTypes = {
     location: PropTypes.object,

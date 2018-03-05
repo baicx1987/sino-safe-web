@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Layout, Icon, Breadcrumb } from 'antd';
+import { Layout, Icon, Breadcrumb, Modal } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { Route, Redirect, Switch } from 'dva/router';
@@ -36,7 +36,7 @@ const query = {
   },
 };
 @App
-class BasicLayout extends React.PureComponent {
+class BasicLayout extends React.Component {
   static childContextTypes = {
     location: PropTypes.object,
     breadcrumbNameMap: PropTypes.object,
@@ -65,6 +65,24 @@ class BasicLayout extends React.PureComponent {
       component: billComp,
     };
     return { location, breadcrumbNameMap };
+  }
+  componentDidMount() {
+    const id = sessionStorage.getItem('surId');
+    // this.props.dispatch({
+    //   type: 'global/fetchRole',
+    // });
+    if (id) {
+      this.props.dispatch({
+        type: 'global/sessionUpdateAndFetch',
+        payload: {
+          surId: id,
+        },
+      });
+    } else {
+      this.props.dispatch({
+        type: 'global/switch',
+      });
+    }
   }
   // componentDidMount() {
   //   const url = convertUrl('/sys/menu');
@@ -128,8 +146,8 @@ class BasicLayout extends React.PureComponent {
     return arr;
   }
   render() {
-    const { currentUser, collapsed, fetchingNotices, notices, getRouteData,
-      location, dispatch, navData, billComp } = this.props;
+    const { currentUser, collapsed, fetchingNotices, notices, getRouteData, location,
+      dispatch, navData, billComp, roleData, userSessionData, examPlanSelectData } = this.props;
     const layout = (
       <Layout>
         <SiderMenu
@@ -140,6 +158,9 @@ class BasicLayout extends React.PureComponent {
         />
         <Layout>
           <GlobalHeader
+            roleData={roleData}
+            examPlanSelectData={examPlanSelectData}
+            userSessionData={userSessionData}
             currentUser={currentUser}
             fetchingNotices={fetchingNotices}
             notices={notices}
@@ -161,7 +182,7 @@ class BasicLayout extends React.PureComponent {
                     ) : null)
                   )
                 }
-                <Redirect exact from="/" to="/baseData/examData" />
+                {/* <Redirect exact from="/*" to="/user/role" /> */}
                 <Route path="/machineData/billPlace/bill" component={billComp} />
                 <Route component={NotFound} />
               </Switch>
@@ -194,7 +215,7 @@ class BasicLayout extends React.PureComponent {
     return (
       <DocumentTitle title={this.getPageTitle()}>
         <ContainerQuery query={query}>
-          {params => <div className={classNames(params)}>{layout}</div>}
+          {params => (<div className={classNames(params)}>{layout}</div>)}
         </ContainerQuery>
       </DocumentTitle>
     );

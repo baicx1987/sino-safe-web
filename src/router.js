@@ -7,6 +7,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { getNavData } from './common/nav';
 import { getPlainNode } from './utils/utils';
 import BasicLayout from './layouts/BasicLayout';
+import UserLayout from './layouts/UserLayout';
 
 import styles from './index.less';
 
@@ -71,10 +72,12 @@ function RouterConfig({ history, app }) {
     // },
   };
 
+
   return (
     <LocaleProvider locale={zhCN}>
       <Router history={history}>
         <Switch>
+          <Route path="/user" render={props => <UserLayout {...props} {...passProps} />} />
           <Route path="/" render={props => <BasicLayout {...props} {...passProps} />} />
         </Switch>
       </Router>

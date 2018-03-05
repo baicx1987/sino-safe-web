@@ -5,11 +5,17 @@ import { convertUrl } from '../utils/utils';
 // UkeyUse 增删改查
 export async function viewUkeyUse(params) {
   const url = convertUrl('/machine/ukeyUseView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryUkeyUse(params) {
   const url = convertUrl('/machine/ukeyUsePage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeUkeyUse(params) {
   const url = convertUrl('/machine/ukeyUse', 'Remove');
@@ -44,11 +50,17 @@ export async function updateUkeyUse(params) {
 // Ukey 增删改查
 export async function viewUkey(params) {
   const url = convertUrl('/machine/ukeyView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryUkey(params) {
   const url = convertUrl('/machine/ukeyPage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeUkey(params) {
   const url = convertUrl('/machine/ukey', 'Remove');
@@ -83,11 +95,17 @@ export async function updateUkey(params) {
 // UkeyProgram 增删改查
 export async function viewUkeyProgram(params) {
   const url = convertUrl('machine/ukeyProgramView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryUkeyProgram(params) {
   const url = convertUrl('/machine/ukeyProgramPage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeUkeyProgram(params) {
   const url = convertUrl('/machine/ukeyProgram', 'Remove');
@@ -122,20 +140,32 @@ export async function updateUkeyProgram(params) {
 // BIllPlace 增删改查
 export async function queryBillPlace(params) {
   const url = convertUrl('/machine/billPlacePage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryBill(params) {
   const url = convertUrl('/machine/billPage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 // Machine 增删改查
 export async function viewMachine(params) {
   const url = convertUrl('machine/machineView');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function queryMachine(params) {
   const url = convertUrl('/machine/machinePage');
-  return request(`${url}?${stringify(params)}`);
+  return request(url, {
+    method: 'POST',
+    body: params,
+  });
 }
 export async function removeMachine(params) {
   const url = convertUrl('/machine/machine', 'Remove');

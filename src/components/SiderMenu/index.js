@@ -54,6 +54,9 @@ export default class SiderMenu extends PureComponent {
       return [];
     }
     return menusData.map((item) => {
+      if (item.hide) {
+        return null;
+      }
       if (!item.name) {
         return null;
       }
@@ -131,7 +134,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo}>
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Ant Design Pro</h1>
+            <h1>SINO</h1>
           </Link>
         </div>
         <Menu

@@ -11,116 +11,116 @@ export function getMenuMockData(req, res, u) {
 
   const dataSource = [
     {
-      name: '基础数据管理',
-      path: 'baseData',
-      icon: 'database',
+      smMenuName: '基础数据管理',
+      smUrl: 'baseData',
+      smIcon: 'database',
       children: [
         {
-          name: '考试数据管理',
-          path: 'examData',
+          smMenuName: '考试数据管理',
+          smUrl: 'examData',
         },
         {
-          name: '考试计划数据管理',
-          path: 'examPlanData',
+          smMenuName: '考试计划数据管理',
+          smUrl: 'examPlanData',
         },
         {
-          name: '准考证数据管理',
-          path: 'licenseData',
+          smMenuName: '准考证数据管理',
+          smUrl: 'licenseData',
         },
         {
-          name: '工作人员数据管理',
-          path: 'workManData',
+          smMenuName: '工作人员数据管理',
+          smUrl: 'workManData',
         },
         {
-          name: '考点数据管理',
-          path: 'placeData',
+          smMenuName: '考点数据管理',
+          smUrl: 'placeData',
         },
         {
-          name: '数据包管理',
-          path: 'examDataData',
+          smMenuName: '数据包管理',
+          smUrl: 'examDataData',
         },
         {
-          name: '科目数据管理',
-          path: 'subjectData',
+          smMenuName: '科目数据管理',
+          smUrl: 'subjectData',
         },
       ],
     },
     {
-      name: '硬件设备管理',
-      path: 'machineData',
-      icon: 'usb',
+      smMenuName: '硬件设备管理',
+      smUrl: 'machineData',
+      smIcon: 'usb',
       children: [
         {
-          name: 'U盾使用管理',
-          path: 'ukeyUse',
+          smMenuName: 'U盾使用管理',
+          smUrl: 'ukeyUse',
         },
         {
-          name: 'U盾管理',
-          path: 'ukey',
+          smMenuName: 'U盾管理',
+          smUrl: 'ukey',
         },
         {
-          name: 'U盾软件包管理',
-          path: 'ukeyProgram',
+          smMenuName: 'U盾软件包管理',
+          smUrl: 'ukeyProgram',
         },
         {
-          name: '硬件设备清单管理',
-          path: 'billPlace',
+          smMenuName: '硬件设备清单管理',
+          smUrl: 'billPlace',
         },
         {
-          name: '硬件设备管理',
-          path: 'machine',
+          smMenuName: '硬件设备管理',
+          smUrl: 'machine',
         },
       ],
     }, {
-      name: '皮肤管理',
-      path: 'skinData',
-      icon: 'skin',
+      smMenuName: '皮肤管理',
+      smUrl: 'skinData',
+      smIcon: 'skin',
       children: [
         {
-          name: '模板管理',
-          path: 'template',
+          smMenuName: '模板管理',
+          smUrl: 'template',
         },
         {
-          name: '模板使用管理',
-          path: 'skinUse',
+          smMenuName: '模板使用管理',
+          smUrl: 'skinUse',
         },
         {
-          name: '皮肤管理',
-          path: 'skinPage',
+          smMenuName: '皮肤管理',
+          smUrl: 'skinPage',
         },
       ],
     },
     {
-      name: '消息管理',
-      path: 'msgData',
-      icon: 'message',
+      smMenuName: '消息管理',
+      smUrl: 'msgData',
+      smIcon: 'message',
       children: [
         {
-          name: '短信模板管理',
-          path: 'templatePage',
+          smMenuName: '短信模板管理',
+          smUrl: 'templatePage',
         },
         {
-          name: '短信发送任务',
-          path: 'taskPage',
+          smMenuName: '短信发送任务',
+          smUrl: 'taskPage',
         },
         {
-          name: '短信发送记录',
-          path: 'sendRecordPage',
+          smMenuName: '短信发送记录',
+          smUrl: 'sendRecordPage',
         },
       ],
     },
     {
-      name: '人像识别管理',
-      path: 'faceData',
-      icon: 'safety',
+      smMenuName: '人像识别管理',
+      smUrl: 'faceData',
+      smIcon: 'safety',
       children: [
         {
-          name: '人像数据识别管理',
-          path: 'dataPage',
+          smMenuName: '人像数据识别管理',
+          smUrl: 'dataPage',
         },
         {
-          name: '人像识别终端数据管理',
-          path: 'clientInfoPage',
+          smMenuName: '人像识别终端数据管理',
+          smUrl: 'clientInfoPage',
         },
       ],
     }];

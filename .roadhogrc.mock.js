@@ -29,11 +29,6 @@ import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
 import { format, delay } from 'roadhog-api-doc';
 
-import { getTemplatePageViewData, getTemplatePageMockData, postTemplatePageMockData } from './mock/templatePage';
-import { getTaskPageViewData, getTaskPageMockData, postTaskPageMockData } from './mock/taskPage';
-import { getDataPageViewData, getDataPageMockData, postDataPageMockData } from './mock/dataPage';
-import { getClientInfoPageViewData, getClientInfoPageMockData, postClientInfoPageMockData } from './mock/clientInfoPage';
-import { getSendRecordPageViewData, getSendRecordPageMockData, postSendRecordPageMockData } from './mock/sendRecordPage';
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
 
@@ -330,15 +325,7 @@ const proxy = {
   'POST /login/userRoleListByUserId.jspx': getRole,
   'POST /api/table': getTable,
   'POST /api/check': getCheckData,
-  'POST /api/table': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postTable,
-  },
+  'POST /api/table1': postTable,
   'POST /api/forms': (req, res) => {
     res.send({ message: 'Ok' });
   },
@@ -370,68 +357,6 @@ const proxy = {
     res.send({ status: 'ok' });
   },
   'POST /api/notices': getNotices,
-
-  // TemplatePage 增删改查
-  'POST /msg/templateView.jspx': getTemplatePageViewData,
-  'POST /msg/templatePage.jspx': getTemplatePageMockData,
-  'POST /msg/template.jspx': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postTemplatePageMockData,
-  },
-  // Task 增删改查
-  'POST /msg/taskView.jspx': getTaskPageViewData,
-  'POST /msg/taskPage.jspx': getTaskPageMockData,
-  'POST /msg/task.jspx': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postTaskPageMockData,
-  },
-  // dataPage 增删改查
-  'POST /face/dataView.jspx': getDataPageViewData,
-  'POST /face/dataPage.jspx': getDataPageMockData,
-  'POST /face/data.jspx': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postDataPageMockData,
-  },
-
-  // clientInfoPage 增删改查
-  'POST /face/clientInfoView.jspx': getClientInfoPageViewData,
-  'POST /face/clientInfoPage.jspx': getClientInfoPageMockData,
-  'POST /face/clientInfo.jspx': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postClientInfoPageMockData,
-  },
-  // SendRecordPage 增删改查
-  'POST /msg/sendRecordView.jspx': getSendRecordPageViewData,
-  'POST /msg/sendRecordPage.jspx': getSendRecordPageMockData,
-  'POST /msg/sendRecord.jspx': {
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-    },
-    $body: postSendRecordPageMockData,
-  },
 };
 // 如果开发环境，delay函数模拟延迟，如果是生产环境，则不启服务
 export default noProxy ? {} : delay(proxy, 1000);

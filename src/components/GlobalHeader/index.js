@@ -1,23 +1,20 @@
 import React, { PureComponent } from 'react';
-import { Layout, Menu, Icon, Spin, Tag, Dropdown, Avatar, message } from 'antd';
+import { Layout, Menu, Icon, Spin, Tag, Dropdown, Avatar, Select, message } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import Debounce from 'lodash-decorators/debounce';
-import NoticeIcon from '../../components/NoticeIcon';
 import HeaderSearch from '../../components/HeaderSearch';
 import styles from './index.less';
 
 const { Header } = Layout;
-
+const Option = Select.Option;
 export default class GlobalHeader extends PureComponent {
   componentDidMount() {
-    this.props.dispatch({
-      type: 'user/fetchCurrent',
-    });
   }
   componentWillUnmount() {
     this.triggerResizeEvent.cancel();
   }
+
   getNoticeData() {
     const { notices = [] } = this.props;
     if (notices.length === 0) {
@@ -61,8 +58,13 @@ export default class GlobalHeader extends PureComponent {
     }
     handleMenuClick = ({ key }) => {
       if (key === 'logout') {
+        window.location.href = 'login.html';
+        // this.props.dispatch({
+        //   type: 'global/logout',
+        // });
+      } else if (key === 'switch') {
         this.props.dispatch({
-          type: 'login/logout',
+          type: 'global/switch',
         });
       }
     }
@@ -80,27 +82,70 @@ export default class GlobalHeader extends PureComponent {
       event.initEvent('resize', true, false);
       window.dispatchEvent(event);
     }
-    render() {
-      const {
-        currentUser, collapsed, fetchingNotices,
-      } = this.props;
-      const menu = (
-        <Menu className={styles.menu} selectedKeys={[]} onClick={this.handleMenuClick}>
-          <Menu.Item disabled><Icon type="user" />个人中心</Menu.Item>
-          <Menu.Item disabled><Icon type="setting" />设置</Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="logout"><Icon type="logout" />退出登录</Menu.Item>
-        </Menu>
-      );
-      const noticeData = this.getNoticeData();
-      return (
-        <Header className={styles.header}>
-          <Icon
-            className={styles.trigger}
-            type={collapsed ? 'menu-unfold' : 'menu-fold'}
-            onClick={this.toggle}
-          />
-        </Header>
-      );
-    }
+   handleChange = (value) => {
+     const values = {
+       dpId: value,
+     };
+     this.props.dispatch({
+       type: 'global/examPlanSessionUpdate',
+       payload: values,
+     });
+   }
+   render() {
+     const {
+       collapsed, fetchingNotices, userSessionData, examPlanSelectData, roleData,
+     } = this.props;
+     console.log(userSessionData);
+     const menu = (
+       <Menu className={styles.menu} selectedKeys={[]} onClick={this.handleMenuClick}>
+         <Menu.Item key="switch" disabled={roleData && roleData.length === 1}><Icon type="switch" />切换角色</Menu.Item>
+         <Menu.Divider />
+         <Menu.Item key="logout"><Icon type="logout" />退出登录</Menu.Item>
+       </Menu>
+     );
+     const noticeData = this.getNoticeData();
+     const options = [];
+     if (examPlanSelectData) {
+       examPlanSelectData.map((item) => {
+         options.push(<Option value={item.key}>{item.val}</Option>);
+       });
+     }
+     return (
+       <Header className={styles.header}>
+         <Icon
+           className={styles.trigger}
+           type={collapsed ? 'menu-unfold' : 'menu-fold'}
+           onClick={this.toggle}
+         />
+         {examPlanSelectData ? (<Select
+           defaultValue={userSessionData.sesPlanId || examPlanSelectData[0].key}
+           style={{ width: 200 }}
+           onChange={this.handleChange}
+         >
+           { options }
+         </Select>) : <Spin />}
+         <div className={styles.right}>
+           <HeaderSearch
+             className={`${styles.action} ${styles.search}`}
+             placeholder="站内搜索"
+             dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
+             onSearch={(value) => {
+                console.log('input', value); // eslint-disable-line
+              }}
+             onPressEnter={(value) => {
+                console.log('enter', value); // eslint-disable-line
+              }}
+           />
+           {userSessionData ? (
+             <Dropdown overlay={menu}>
+               <span className={`${styles.action} ${styles.account}`}>
+                 <Avatar size="small" className={styles.avatar} src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png" />
+                 {userSessionData.sesUserName}
+               </span>
+             </Dropdown>
+            ) : <Spin size="small" style={{ marginLeft: 8 }} />}
+         </div>
+       </Header>
+     );
+   }
 }
